@@ -10,4 +10,7 @@ The sidebar is our category selector, which allow the user to select different a
 At the top of the main page, we have a slider that allows users to select the year they want to view, which we set to range from 2018 to 2022. Users select different years in the three main pages so as to view data visualization graphs for each year, for example, genres analysis, album popularity distribution of artists in 2018, lyric sentiment analysis, audio data analysis, etc. The specific chart type and content will be adjusted according to the actual data afterwards.
 
 ## Dash sketch
-![sketch](sketch.png)
+![image](https://user-images.githubusercontent.com/43694291/219890638-220e6808-c7b9-4977-83fe-f6d8c900a5ea.png)
+![image](https://user-images.githubusercontent.com/43694291/219890683-6afd4d37-b106-418f-80ff-954632d09c20.png)
+![image](https://user-images.githubusercontent.com/43694291/219890719-92f0ac39-0b69-4dd1-a4ef-0af41b548e7d.png)
+
