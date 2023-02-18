@@ -1,10 +1,10 @@
-## Section 1: Motivation and Purpose/rubric={reasoning:8,writing:2}
+## Section 1: Motivation and Purpose
 
 - Our role: Music data scientist
 - Target audience: Music production company
 Music is much easier to spread in today’s informative society than the age of vinyl records, listeners' appetite changes dramatic and fast too. It is sometimes difficult for music companies to grasp the trends in the music market to their detriment. We need a tool to monitor the characteristics of music preferred by listeners to help music companies analyze and predict market needs. Our product can provide the main features of hit songs with respect to audio, lyrics and artist through years. Administrators in music companies can determine the orientation and style of their artists and songs based on the information we offer.
 
-## Section 2: Description of the data/rubric={reasoning:8,writing:2}
+## Section 2: Description of the data
 
 The dataset contains Top 100 hot  trending songs per year ranked by BillBoard during the last ten years, which are based on sales (physical and digital), radio play, and online streaming in the United States. In terms of those songs:
 - a. we use spotify APIs to get artists information (name, followers, genres, albums and popularity, etc) to provide a comparison of artists, which includes a comparison of all artists as a whole as well as a comparison of each artist themselves in different dimensions. 
