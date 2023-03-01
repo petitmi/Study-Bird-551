@@ -42,6 +42,15 @@ page_1 = html.Div("This is page for Artist")
 page_2 = html.Div("This is page for Lyrics")
 page_3 = html.Div("This is page for Audio")
 
+years=[]
+mark = {}
+for i in range(2012,2023):
+    years.append(str(i))
+for year in years:
+    mark[year] = {
+        'label': year,
+        'style': {'color': 'white'}}
+    
 # layout of the dash app
 app.layout = dbc.Container([dbc.Row([
     # sidebar includes 2 labels and 3 tabs
@@ -59,11 +68,7 @@ app.layout = dbc.Container([dbc.Row([
                 max=2022,
                 value=[2018, 2019],
                 step=1,
-                marks={'2018':{'label':'2018','style': {'color': 'white'}},
-                      '2019':{'label':'2019','style': {'color': 'white'}},
-                      '2020':{'label':'2020','style': {'color': 'white'}},
-                      '2021':{'label':'2021','style': {'color': 'white'}},
-                      '2022':{'label':'2022','style': {'color': 'white'}}}),
+                marks=mark),
             html.Div(id="page-content",children=page_1),
             html.Iframe(id='chart1',style={'border-width': '0', 'width': '100%', 'height': '400px'}),
             html.Iframe(id='chart2',style={'border-width': '0', 'width': '100%', 'height': '400px'}),
