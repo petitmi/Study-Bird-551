@@ -16,7 +16,7 @@ app = dash.Dash(external_stylesheets=[dbc.themes.QUARTZ])
 # location settings for sidebar
 SIDEBAR_STYLE = {
     "position": "fixed",
-    "top": 0,
+    "top": '10rem',
     "left": 0,
     "bottom": 0,
     "width": "16rem",
@@ -52,23 +52,17 @@ for year in years:
         'style': {'color': 'white'}}
     
 # layout of the dash app
-app.layout = dbc.Container([dbc.Row([
+app.layout = dbc.Container([
+    dbc.Row([html.Div([   
+                html.H3("BillBoard Top 100 Hit 🔥🔥Songs🔥🔥 Analysis", className="display-4"),
+                html.H5("Study Bird 551"),
+                html.Hr()])]),
+    dbc.Row([
     # sidebar includes 2 labels and 3 tabs
-    dbc.Col([html.Div([   
-                html.H3("Study Bird 551", className="display-4"),
-                html.Hr(),
-                html.P("Selection Bar", className="lead")]),
-             nav],style=SIDEBAR_STYLE),
+    dbc.Col([nav], className="lead",style=SIDEBAR_STYLE),
     
     # content page includes 1 time slider at the top and 3 graphs below
-    dbc.Col([
-            dcc.RangeSlider(
-                id='year-slider',
-                min=2018,
-                max=2022,
-                value=[2018, 2019],
-                step=1,
-                marks=mark),
+    dbc.Col([dcc.RangeSlider(id='year-slider',min=2018,max=2022,value=[2018, 2019],step=1,marks=mark),
             html.Div(id="page-content",children=page_1),
             html.Iframe(id='chart1',style={'border-width': '0', 'width': '100%', 'height': '400px'}),
             html.Iframe(id='chart2',style={'border-width': '0', 'width': '100%', 'height': '400px'}),
@@ -152,4 +146,4 @@ def generate_page_content(page_title, year):
     ),chart.to_html(),chart1.to_html(),chart2.to_html()
 
 if __name__ == "__main__":
-    app.run_server(debug=True, use_reloader=False)
+    app.run_server(debug=True)
