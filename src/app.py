@@ -15,16 +15,17 @@ app = dash.Dash(external_stylesheets=[dbc.themes.QUARTZ])
 
 # location settings for sidebar
 SIDEBAR_STYLE = {
-    "position": "fixed",
-    "top": '10rem',
+    # "position": "fixed",
+    "top": '10px',
+    "flex":'0 1 10%',
     "left": 0,
     "bottom": 0,
-    "width": "16rem",
-    "padding": "2rem 1rem"}
+    "width": "10px",
+    "padding": "2px 1px"}
 
 # location settings for sidebar
 CONTENT_STYLE = {
-    "margin-left": "18rem",
+    "margin-left": "2rem",
     "margin-right": "2rem",
     "padding": "2rem 1rem"}
 
@@ -54,7 +55,7 @@ for year in years:
 # layout of the dash app
 app.layout = dbc.Container([
     dbc.Row([html.Div([   
-                html.H3("BillBoard Top 100 Hit 🔥🔥Songs🔥🔥 Analysis", className="display-4"),
+                html.H3("BillBoard Top100 Hot 🔥🔥Songs🔥🔥 Analysis", className="display-4"),
                 html.H5("Study Bird 551"),
                 html.Hr()])]),
     dbc.Row([
