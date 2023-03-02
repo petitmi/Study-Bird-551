@@ -62,7 +62,7 @@ app.layout = dbc.Container([
     dbc.Col([nav], className="lead",style=SIDEBAR_STYLE),
     
     # content page includes 1 time slider at the top and 3 graphs below
-    dbc.Col([dcc.RangeSlider(id='year-slider',min=2018,max=2022,value=[2018, 2019],step=1,marks=mark),
+    dbc.Col([dcc.RangeSlider(id='year-slider',min=2012,max=2022,value=[2012, 2022],step=1,marks=mark),
             html.Div(id="page-content",children=page_1),
             html.Iframe(id='chart1',style={'border-width': '0', 'width': '100%', 'height': '400px'}),
             html.Iframe(id='chart2',style={'border-width': '0', 'width': '100%', 'height': '400px'}),
