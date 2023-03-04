@@ -166,9 +166,9 @@ def generate_page_content(page_title, year):
         hits = pd.read_csv('../data/processed/audio_data_processed.csv')
         hits.drop(["Unnamed: 0",'type','uri','track_href','analysis_url','id'], axis=1, inplace=True)
         titleParams=[alt.TitleParams(text = x,subtitle=y,anchor='start',fontSize = 24) for (x,y) in [
-                    ("Vibe Features","Energy, speechiness, instrumentalness,valence in different strata of the charts"),
-                    ("Rhythm Features", "Time signature, tempo, duration occurences"),
-                    ("Musical Features", "Musical key, mode occurences")]]
+                    ("Vibe Features Over Rank","Energy, speechiness, instrumentalness,valence in different strata of the charts"),
+                    ("Rhythm Features Over Year", "Time signature, tempo, duration occurences"),
+                    ("Musical Features Interaction", "Musical key, mode occurences")]]
 
         hits['rank_bin'] = pd.cut(hits['Rank'],bins=10,labels=['1-10','11-20','21-30','31-40','41-50','51-60','61-70','71-80','81-90','91-100'])
         hits_c = hits[(start_year <= hits['Year']) & (hits['Year'] <= end_year)]
@@ -190,16 +190,6 @@ def generate_page_content(page_title, year):
     
 
         hits_c1 = hits.groupby(['key','mode']).size().reset_index(name='cnt')
-        chart2 = alt.Chart(hits_c1).mark_bar().encode(
-            x=alt.X('key:N',title='Musical Key'),
-            y=alt.Y('cnt:Q',title='Occurrence'),
-            color='mode:N'
-        ).properties(width=900,height=250, title=titleParams[1])
-
-
-        hits_c2 = hits.groupby(['Year','time_signature']).size().reset_index(name='cnt')
-        hits_c2['ts_perct']=hits_c2['cnt']/100
-        # hits_c2_2 = hits[['Year','tempo','duration_ms']].set_index(['Year']).stack().reset_index(name='value').rename(columns={'level_1':'features'})
         chart1 = (alt.Chart(hits_c2[hits_c2['time_signature']==4]).mark_line(point=True).encode(
             x=alt.X('Year',scale=alt.Scale(zero=False)),
             y=alt.Y('ts_perct:Q',scale=alt.Scale(zero=False),title=' ')
@@ -211,24 +201,31 @@ def generate_page_content(page_title, year):
             y=alt.Y('duration_ms:Q',title=' ')
         ).properties(width=250,height=250,title="Duration(ms)")).properties(title=titleParams[2])
         
+        hits_c2 = hits.groupby(['Year','time_signature']).size().reset_index(name='cnt')
+        hits_c2['ts_perct']=hits_c2['cnt']/100
+        # hits_c2_2 = hits[['Year','tempo','duration_ms']].set_index(['Year']).stack().reset_index(name='value').rename(columns={'level_1':'features'})
+        chart2 = alt.Chart(hits_c1).mark_bar().encode(
+            x=alt.X('key:N',title='Musical Key'),
+            y=alt.Y('cnt:Q',title='Occurrence'),
+            color='mode:N'
+        ).properties(width=900,height=250, title=titleParams[1])
+        
         chart_describ=dcc.Markdown("""
-        This is an analysis plot about tracks' `vibe` characteristics.  
-        The **energy** represents the intensity and activity; 
-        The **speechness** detects the degree of presence spoken words; 
-        The **instrumentalness** predicts whether a track contains no vocals; 
-        The **valence** describing the musical positiveness.
+        - The **energy** represents the intensity and activity; 
+        - The **speechness** detects the degree of presence spoken words; 
+        - The **instrumentalness** predicts whether a track contains no vocals; 
+        - The **valence** describing the musical positiveness.
         """)
-        chart2_describ="""
-        This is an analysis plot about tracks' `musical` characteristics. 
-        The **musical** key represents the scale, where values are integers that can map to pitches using standard Pitch Class notation. E.g. 0 = C, 1 = C♯/D♭, 2 = D, and so on; 
-        The **mode** indicates the modality (major or minor), which is the type of scale from which its melodic content is derived. Major is represented by 1 and minor is 0.
-        """
-        chart1_describ="""
-        This is an analysis plot about tracks' `rhythm` characteristics. 
-        The **time Signiture** (aka. meter) is a notational convention to specify how many beats are in each bar (or measure). The time signature ranges from 3 to 7 indicating time signatures of "3/4", to "7/4".
-        The **tempo** (aka. beats per minute, BPM), which is the speed or pace of a given piece and derives directly from the average beat duration.
-        The **duration** is the duration of the track in milliseconds.
-        """
+        chart1_describ=dcc.Markdown("""
+        - The **time signiture** (aka. meter) is a notational convention to specify how many beats are in each bar (or measure). The time signature ranges from 3 to 7 indicating time signatures of "3/4", to "7/4"; 
+        - The **tempo** (aka. beats per minute, BPM), which is the speed or pace of a given piece and derives directly from the average beat duration; 
+        - The **duration** is the duration of the track in milliseconds.
+        """)
+        chart2_describ=dcc.Markdown("""
+        - The **musical** key represents the scale, where values are integers that can map to pitches using standard Pitch Class notation. E.g. 0 = C, 1 = C♯/D♭, 2 = D, and so on; 
+        - The **mode** indicates the modality (major or minor), which is the type of scale from which its melodic content is derived. Major is represented by 1 and minor is 0.
+        """)
+
     return html.Div(
         [html.H4(f"{page_title} between {year[0]} and {year[1]}:"),]
         # html.Div("This is data visualization content for {} in {}:".format(page_title, year))]
