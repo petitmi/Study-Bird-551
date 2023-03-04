@@ -30,17 +30,13 @@ CONTENT_STYLE = {
 
 # create three tabs in the sidebar
 nav_items = [
-    dbc.NavItem(dbc.NavLink("Artist", id="page-1-link",href="artist")),
-    dbc.NavItem(dbc.NavLink("Lyrics", id="page-2-link",href="lyrics")),
-    dbc.NavItem(dbc.NavLink("Audio", id="page-3-link",href="audio")),]
+    dbc.NavItem(dbc.NavLink("Artist", id="page-artist",href="artist")),
+    dbc.NavItem(dbc.NavLink("Lyrics", id="page-lyrics",href="lyrics")),
+    dbc.NavItem(dbc.NavLink("Tracks", id="page-tracks",href="tracks"))]
 
 # group three tabs together and list them virtically
 nav = dbc.Nav(nav_items, vertical=True)
 
-# create three page contents for three tabs
-page_1 = html.Div("This is page for Artist")
-page_2 = html.Div("This is page for Lyrics")
-page_3 = html.Div("This is page for Audio")
 
 years=[]
 mark = {}
@@ -52,18 +48,19 @@ for year in years:
         'style': {'color': 'white'}}
     
 # layout of the dash app
-app.layout = dbc.Container([
+app.layout = dbc.Container([    
+    dcc.Location(id='url', refresh=False),
     dbc.Row([html.Div([   
                 html.H3("BillBoard Top100 Hot 🔥🔥Songs🔥🔥 Analysis", className="display-4"),
                 html.H5("Study Bird 551"),
                 html.Hr()])]),
     dbc.Row([
     # sidebar includes 2 labels and 3 tabs
-    dbc.Col([nav], className="lead",style=SIDEBAR_STYLE),
+    dbc.Col([nav],style=SIDEBAR_STYLE),
     
     # content page includes 1 time slider at the top and 3 graphs below
     dbc.Col([dcc.RangeSlider(id='year-slider',min=2012,max=2022,value=[2012, 2022],step=1,marks=mark),
-            html.Div(id="page-content",children=page_1),
+            html.Div(id="page-content"),
             html.Iframe(id='chart1',style={'border-width': '0', 'width': '100%', 'height': '400px'}),
             html.Iframe(id='chart2',style={'border-width': '0', 'width': '100%', 'height': '400px'}),
             html.Iframe(id='chart3',style={'border-width': '0', 'width': '100%', 'height': '400px'})],style=CONTENT_STYLE),])],
@@ -75,20 +72,17 @@ app.layout = dbc.Container([
     Output("chart1", "srcDoc"),
     Output("chart2", "srcDoc"),
     Output("chart3", "srcDoc")],
-    [Input("page-1-link", "n_clicks"), 
-    Input("page-2-link", "n_clicks"), 
-    Input("page-3-link", "n_clicks"), 
+    [Input('url', 'pathname'),
     Input("year-slider", "value")])
 
 # render page content
-def render_page_content(page_1_clicks, page_2_clicks, page_3_clicks, year):
-    changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0]
-    if "page-1-link" in changed_id:
+def render_page_content(pathname,year):
+    if "artist" in pathname:
         return generate_page_content("Artist Analysis", year)
-    elif "page-2-link" in changed_id:
+    elif "lyrics" in pathname:
         return generate_page_content("Lyrics Analysis", year)
-    elif "page-3-link" in changed_id:
-        return generate_page_content("Audio Analysis", year)
+    elif "tracks" in  pathname:
+        return generate_page_content("Tracks Analysis", year)
     else:
         return generate_page_content("Artist Analysis", year)
 
@@ -140,19 +134,19 @@ def generate_page_content(page_title, year):
             tooltip=['Year','Frequency_love','Artist']).properties(
             title="Frequency of 'love' in {}".format(year)).interactive()
         
-    elif page_title=="Audio Analysis":
+    elif page_title=="Tracks Analysis":
         hits = pd.read_csv('../data/processed/audio_data_processed.csv')
-        hits.drop("Unnamed: 0", axis=1, inplace=True)
+        hits.drop(["Unnamed: 0",'type','uri','track_href','analysis_url','id'], axis=1, inplace=True)
         hits['rank_bin'] = pd.cut(hits['Rank'],bins=10,labels=['1-10','11-20','21-30','31-40','41-50','51-60','61-70','71-80','81-90','91-100'])
 
         hits_c1 = hits[(start_year <= hits['Year']) & (hits['Year'] <= end_year)]
         hits_c1_bin = hits_c1.groupby('rank_bin').mean().reset_index()
-        hits_c1_bin = hits_c1_bin[['rank_bin','energy','popularity','speechiness','liveness','valence']].set_index(['rank_bin','popularity']).stack().reset_index(name='value').rename(columns={'level_2':'features'})
+        hits_c1_bin = hits_c1_bin[['rank_bin','energy','popularity','speechiness','instrumentalness','valence']].set_index(['rank_bin','popularity']).stack().reset_index(name='value').rename(columns={'level_2':'features'})
 
         chart = alt.Chart(hits_c1_bin).mark_bar().encode(
-            x='features:N',
+            x='rank_bin:N',
             y=alt.Y('value',scale=alt.Scale(zero=False)),
-            column='rank_bin:N',
+            column='features:N',
             color='features:N',
             opacity='popularity:Q'
         )
@@ -170,14 +164,6 @@ def generate_page_content(page_title, year):
             color='features:N',
             opacity='popularity:Q'
         )
-        # chart1 = alt.Chart(cars).mark_line().encode(
-        #     x='Year',
-        #     y='mean(Miles_per_Gallon)',
-        #     color='Origin')
-        # chart2 = alt.Chart(cars).mark_line().encode(
-        #     x='Year',
-        #     y='mean(Miles_per_Gallon)',
-        #     color='Origin')
         
 
     return html.Div(
