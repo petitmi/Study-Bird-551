@@ -133,18 +133,9 @@ def generate_page_content(page_title, year):
         df['rank_bin10'] = pd.cut(df['Rank'],bins=10,labels=['1-10','11-20','21-30','31-40','41-50','51-60','61-70','71-80','81-90','91-100'])
         df_bin10 = df.groupby(['rank_bin10','Year']).mean().reset_index()
    
-        df['word cloud'] = df['Clean Lyrics']
-        remove_words = ['verse', 'chorus', 'oh', 'want', 'yeah', 'wan', 'na', 'got', 'might','feat']
-        for word in remove_words:
-            df['word cloud'] = df['word cloud'].str.replace(fr'\b{word}\b', '', regex=True)
-        text = ' '.join(df['word cloud'])
-        wordcloud = WordCloud(width=800, height=300, background_color='white').generate(text)
 
-        plt.figure(figsize = (10, 4), facecolor = None)
-        plt.imshow(wordcloud)
-        plt.axis("off")
-        plt.tight_layout(pad = 0)
-        plt.savefig(f'../data/processed/wordcloud.png',dpi = 80)
+
+
         
         if start_year==end_year:
             chart = alt.Chart(df_bin10).mark_bar(interpolate='basis').encode(
@@ -189,28 +180,46 @@ def generate_page_content(page_title, year):
             symbolSize=150, 
             symbolType='circle')
         
-        image_filename = '../data/processed/wordcloud.png'
-        encoded_image = base64.b64encode(open(image_filename, 'rb').read())
+        
+
+        
         chart_describ=[dcc.Markdown("""
         - Divide the top 100 songs into 10 groups; 
         - The X-axis represents the year; 
         - The Y-axis is the frequency of the keyword 'love'; 
         - From the figure, we can see the frequency of 'love' and the trend of their frequency every year.
         """)]
-       
+    
         chart1_describ=dcc.Markdown("""
         - Divide the top 100 songs into 4 groups; 
         - The X-axis represents the year; 
         - The Y-axis is the lyrics length; 
-        - From the figure, From the figure, we can compare each year‘s lyrics length in the four rank groups.
+        - From the figure, From the figure, we can compare each year's lyrics length in the four rank groups.
         """)
-        
-        chart2_describ=[dcc.Markdown("""
-        - Chart on the left is a pie chart representing the proportion of positive, negative and neutral lyrics in the selected year. 
-        - Placing the mouse on the pie chart can show the specific number of songs; 
-        - The chart on the right is the boxplot which displays ranges within sentiment scores for the selected year; 
-        - sentiment score ranges from -1 to 1. (-1 is the most negative, 1 is the most positive, and 0 is neutral).
-        """),html.Div([html.Img(src='data:image/png;base64,{}'.format(encoded_image.decode()))])]
+        try:
+            df['word cloud'] = df['Clean Lyrics']
+            remove_words = ['verse', 'chorus', 'oh', 'want', 'yeah', 'wan', 'na', 'got', 'might','feat']
+            for word in remove_words:
+                df['word cloud'] = df['word cloud'].str.replace(fr'\b{word}\b', '', regex=True)
+            text = ' '.join(df['word cloud'])
+            wordcloud = WordCloud(width=1200, height=300, background_color='white').generate(text)
+            image_filename = '../data/processed/wordcloud.png'
+            plt.switch_backend('Agg') 
+            plt.figure(figsize = (12, 4), facecolor = None)
+            plt.imshow(wordcloud)
+            plt.axis("off")
+            plt.tight_layout(pad = 0)
+            plt.savefig(image_filename,dpi = 80)
+            encoded_image = base64.b64encode(open(image_filename, 'rb').read())
+            chart2_describ=[dcc.Markdown("""
+            - Chart on the left is a pie chart representing the proportion of positive, negative and neutral lyrics in the selected year. 
+            - Placing the mouse on the pie chart can show the specific number of songs; 
+            - The chart on the right is the boxplot which displays ranges within sentiment scores for the selected year; 
+            - sentiment score ranges from -1 to 1. (-1 is the most negative, 1 is the most positive, and 0 is neutral).
+            """),html.Div([html.Img(src=f'data:image/png;base64, {encoded_image.decode()}',alt="Red dot")])]
+        except:
+            chart2_describ=""""""
+
         
         
     elif page_title=="Tracks Analysis":
