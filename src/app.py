@@ -188,9 +188,9 @@ def generate_page_content(page_title, year):
         chart = (charts[0]+charts[1]+charts[2]+charts[3]).properties(
                 width=900,height=250, title = titleParams[0])
     
-
-        hits_c1 = hits.groupby(['key','mode']).size().reset_index(name='cnt')
-        chart1 = (alt.Chart(hits_c2[hits_c2['time_signature']==4]).mark_line(point=True).encode(
+        hits_c1 = hits.groupby(['Year','time_signature']).size().reset_index(name='cnt')
+        hits_c1['ts_perct']=hits_c1['cnt']/100
+        chart1 = (alt.Chart(hits_c1[hits_c1['time_signature']==4]).mark_line(point=True).encode(
             x=alt.X('Year',scale=alt.Scale(zero=False)),
             y=alt.Y('ts_perct:Q',scale=alt.Scale(zero=False),title=' ')
         ).properties(width=250,height=250,title="4/4 Time signature percentage")| alt.Chart(hits[['Year','duration_ms','tempo']]).mark_boxplot().encode(
@@ -199,17 +199,17 @@ def generate_page_content(page_title, year):
         ).properties(width=250,height=250,title="Tempo")| alt.Chart(hits[['Year','duration_ms','tempo']]).mark_boxplot().encode(
             x=alt.X('Year',scale=alt.Scale(zero=False)),
             y=alt.Y('duration_ms:Q',title=' ')
-        ).properties(width=250,height=250,title="Duration(ms)")).properties(title=titleParams[2])
+        ).properties(width=250,height=250,title="Duration(ms)")).properties(title=titleParams[1])
         
-        hits_c2 = hits.groupby(['Year','time_signature']).size().reset_index(name='cnt')
-        hits_c2['ts_perct']=hits_c2['cnt']/100
+        hits_c2 = hits.groupby(['key','mode']).size().reset_index(name='cnt')
+
         # hits_c2_2 = hits[['Year','tempo','duration_ms']].set_index(['Year']).stack().reset_index(name='value').rename(columns={'level_1':'features'})
-        chart2 = alt.Chart(hits_c1).mark_bar().encode(
+        chart2 = alt.Chart(hits_c2).mark_bar().encode(
             x=alt.X('key:N',title='Musical Key'),
             y=alt.Y('cnt:Q',title='Occurrence'),
             color='mode:N'
-        ).properties(width=900,height=250, title=titleParams[1])
-        
+        ).properties(width=900,height=250, title=titleParams[2])
+
         chart_describ=dcc.Markdown("""
         - The **energy** represents the intensity and activity; 
         - The **speechness** detects the degree of presence spoken words; 
