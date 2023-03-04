@@ -98,21 +98,25 @@ def generate_page_content(page_title, year):
     end_year=int(year[1])
     
     if page_title=="Artist Analysis":
-        chart = alt.Chart(cars).mark_circle(size=60).encode(
-            x='Horsepower',
-            y='Miles_per_Gallon',
-            color='Origin',
-            tooltip=['Name', 'Horsepower', 'Miles_per_Gallon']).interactive()
-        chart1 = alt.Chart(cars).mark_circle(size=60).encode(
-            x='Horsepower',
-            y='Miles_per_Gallon',
-            color='Origin',
-            tooltip=['Name', 'Horsepower', 'Miles_per_Gallon']).interactive()
-        chart2 = alt.Chart(cars).mark_circle(size=60).encode(
-            x='Horsepower',
-            y='Miles_per_Gallon',
-            color='Origin',
-            tooltip=['Name', 'Horsepower', 'Miles_per_Gallon']).interactive()
+        chart=None
+        chart1=None
+        chart2=None
+        pass
+    #     chart = alt.Chart(cars).mark_circle(size=60).encode(
+    #         x='Horsepower',
+    #         y='Miles_per_Gallon',
+    #         color='Origin',
+    #         tooltip=['Name', 'Horsepower', 'Miles_per_Gallon']).interactive()
+    #     chart1 = alt.Chart(cars).mark_circle(size=60).encode(
+    #         x='Horsepower',
+    #         y='Miles_per_Gallon',
+    #         color='Origin',
+    #         tooltip=['Name', 'Horsepower', 'Miles_per_Gallon']).interactive()
+    #     chart2 = alt.Chart(cars).mark_circle(size=60).encode(
+    #         x='Horsepower',
+    #         y='Miles_per_Gallon',
+    #         color='Origin',
+    #         tooltip=['Name', 'Horsepower', 'Miles_per_Gallon']).interactive()
         
     elif page_title=="Lyrics Analysis":
         df = pd.read_excel('../data/processed/lyrics_dataset.xlsx')
@@ -142,18 +146,45 @@ def generate_page_content(page_title, year):
             title="Frequency of 'love' in {}".format(year)).interactive()
         
     elif page_title=="Audio Analysis":
-        chart = alt.Chart(cars).mark_line().encode(
-            x='Year',
-            y='mean(Miles_per_Gallon)',
-            color='Origin')
-        chart1 = alt.Chart(cars).mark_line().encode(
-            x='Year',
-            y='mean(Miles_per_Gallon)',
-            color='Origin')
-        chart2 = alt.Chart(cars).mark_line().encode(
-            x='Year',
-            y='mean(Miles_per_Gallon)',
-            color='Origin')
+        import datetime
+        hits = pd.read_csv('../data/processed/audio_data_processed.csv', parse_dates=['Year'])
+        hits.drop("Unnamed: 0", axis=1, inplace=True)
+        year_input=[datetime.date(2019,1,1),datetime.date(2020,1,1)]
+        hits['rank_bin'] = pd.cut(hits['Rank'],bins=10,labels=['1-10','11-20','21-30','31-40','41-50','51-60','61-70','71-80','81-90','91-100'])
+
+        hits_c1 = hits[hits['Year'].isin(year_input)]
+        hits_c1_bin = hits_c1.groupby('rank_bin').mean().reset_index()
+        hits_c1_bin = hits_c1_bin[['rank_bin','energy','popularity','speechiness','liveness','valence']].set_index(['rank_bin','popularity']).stack().reset_index(name='value').rename(columns={'level_2':'features'})
+
+        chart = alt.Chart(hits_c1_bin).mark_bar().encode(
+            x='features:N',
+            y=alt.Y('value',scale=alt.Scale(zero=False)),
+            column='rank_bin:N',
+            color='features:N',
+            opacity='popularity:Q'
+        )
+        chart1 = alt.Chart(hits_c1_bin).mark_bar().encode(
+            x='features:N',
+            y=alt.Y('value',scale=alt.Scale(zero=False)),
+            column='rank_bin:N',
+            color='features:N',
+            opacity='popularity:Q'
+        )
+        chart2 = alt.Chart(hits_c1_bin).mark_bar().encode(
+            x='features:N',
+            y=alt.Y('value',scale=alt.Scale(zero=False)),
+            column='rank_bin:N',
+            color='features:N',
+            opacity='popularity:Q'
+        )
+        # chart1 = alt.Chart(cars).mark_line().encode(
+        #     x='Year',
+        #     y='mean(Miles_per_Gallon)',
+        #     color='Origin')
+        # chart2 = alt.Chart(cars).mark_line().encode(
+        #     x='Year',
+        #     y='mean(Miles_per_Gallon)',
+        #     color='Origin')
         
 
     return html.Div(
