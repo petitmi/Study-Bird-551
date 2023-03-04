@@ -64,4 +64,4 @@ df['Sentiment'] = df['Sentiment Polarity'].apply(lambda x: 'Negative' if x < 0 e
 df['Frequency_love'] = df['Lyrics'].str.count('love')
 
 #save file to data/processed file
-df.to_excel(r'../data/processed/dataset.xlsx', index=False)
+df.to_excel(r'../data/processed/lyrics_dataset.xlsx', index=False)
