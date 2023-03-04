@@ -195,7 +195,7 @@ def generate_page_content(page_title, year):
         """),html.Div([html.Img(src='data:image/png;base64,{}'.format(encoded_image1.decode()))]),dcc.Markdown("""
         - Artists with the highest popularity.
         """),html.Div([html.Img(src='data:image/png;base64,{}'.format(encoded_image2.decode()))]),dcc.Markdown("""
-        - Singers with the highest number of songs on the Top 10.
+        - Artists with the highest number of songs on the Top 100.
         """)]
         chart1_describ=dcc.Markdown("""
         - The chart on the **left** represents the **distribution of singers by year of debut**.
