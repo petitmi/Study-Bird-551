@@ -135,37 +135,49 @@ def generate_page_content(page_title, year):
             title="Frequency of 'love' in {}".format(year)).interactive()
         
     elif page_title=="Tracks Analysis":
+
         hits = pd.read_csv('../data/processed/audio_data_processed.csv')
         hits.drop(["Unnamed: 0",'type','uri','track_href','analysis_url','id'], axis=1, inplace=True)
         hits['rank_bin'] = pd.cut(hits['Rank'],bins=10,labels=['1-10','11-20','21-30','31-40','41-50','51-60','61-70','71-80','81-90','91-100'])
 
-        hits_c1 = hits[(start_year <= hits['Year']) & (hits['Year'] <= end_year)]
-        hits_c1_bin = hits_c1.groupby('rank_bin').mean().reset_index()
-        hits_c1_bin = hits_c1_bin[['rank_bin','energy','popularity','speechiness','instrumentalness','valence']].set_index(['rank_bin','popularity']).stack().reset_index(name='value').rename(columns={'level_2':'features'})
-
-        chart = alt.Chart(hits_c1_bin).mark_bar().encode(
+        hits_c = hits[(start_year <= hits['Year']) & (hits['Year'] <= end_year)]
+        hits_c_bin = hits_c.groupby('rank_bin').mean().reset_index()
+        hits_c_bin = hits_c_bin[['rank_bin','popularity','energy','speechiness','instrumentalness','valence']].set_index(['rank_bin','popularity']).stack().reset_index(name='value').rename(columns={'level_2':'features'})
+        charts=[]
+        for i in ['energy','speechiness','instrumentalness','valence']:
+            charts.append(alt.Chart(hits_c_bin[hits_c_bin['features'] == i]).mark_square().encode(
             x='rank_bin:N',
             y=alt.Y('value',scale=alt.Scale(zero=False)),
-            column='features:N',
             color='features:N',
-            opacity='popularity:Q'
-        )
-        chart1 = alt.Chart(hits_c1_bin).mark_bar().encode(
-            x='features:N',
-            y=alt.Y('value',scale=alt.Scale(zero=False)),
-            column='rank_bin:N',
-            color='features:N',
-            opacity='popularity:Q'
-        )
-        chart2 = alt.Chart(hits_c1_bin).mark_bar().encode(
-            x='features:N',
-            y=alt.Y('value',scale=alt.Scale(zero=False)),
-            column='rank_bin:N',
-            color='features:N',
-            opacity='popularity:Q'
-        )
+            opacity='popularity:Q',
+            size= 'popularity:Q'
+            ))
+        chart = (charts[0]+charts[1]+charts[2]+charts[3]).properties(
+            width=900,height=300,title="Vibe features in different strata of the charts")
         
 
+        hits_c1 = hits.groupby(['key','mode']).size().reset_index(name='cnt')
+        chart2 = alt.Chart(hits_c1).mark_bar().encode(
+            x='key:N',
+            y='cnt:Q',
+            color='mode:N'
+        ).properties(width=450,height=300, title="Musical features in different strata of the charts")
+
+
+        hits_c2 = hits.groupby(['Year','time_signature']).size().reset_index(name='cnt')
+        hits_c2['ts_perct']=hits_c2['cnt']/100
+        # hits_c2_2 = hits[['Year','tempo','duration_ms']].set_index(['Year']).stack().reset_index(name='value').rename(columns={'level_1':'features'})
+        chart1 = (alt.Chart(hits_c2[hits_c2['time_signature']==4]).mark_line(point=True).encode(
+            x=alt.X('Year',scale=alt.Scale(zero=False)),
+            y=alt.Y('ts_perct:Q',scale=alt.Scale(zero=False))
+        ).properties(width=300,height=300, title="4/4 Time signature percentage")| alt.Chart(hits[['Year','duration_ms','tempo']]).mark_boxplot().encode(
+            x=alt.X('Year',scale=alt.Scale(zero=False)),
+            y=alt.Y('tempo:Q')
+        ).properties(width=300,height=300, title="Tempo")| alt.Chart(hits[['Year','duration_ms','tempo']]).mark_boxplot().encode(
+            x=alt.X('Year',scale=alt.Scale(zero=False)),
+            y=alt.Y('duration_ms:Q')
+        ).properties(width=300,height=300, title="Duration(ms)"))
+        
     return html.Div(
         [html.H2(page_title),
         html.Div("This is data visualization content for {} in {}:".format(page_title, year))]
