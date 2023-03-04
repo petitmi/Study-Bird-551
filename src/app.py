@@ -158,40 +158,63 @@ def generate_page_content(page_title, year):
         chart2_describ=""
         
     elif page_title=="Tracks Analysis":
+
         hits = pd.read_csv('../data/processed/audio_data_processed.csv')
         hits.drop(["Unnamed: 0",'type','uri','track_href','analysis_url','id'], axis=1, inplace=True)
         hits['rank_bin'] = pd.cut(hits['Rank'],bins=10,labels=['1-10','11-20','21-30','31-40','41-50','51-60','61-70','71-80','81-90','91-100'])
 
-        hits_c1 = hits[(start_year <= hits['Year']) & (hits['Year'] <= end_year)]
-        hits_c1_bin = hits_c1.groupby('rank_bin').mean().reset_index()
-        hits_c1_bin = hits_c1_bin[['rank_bin','energy','popularity','speechiness','instrumentalness','valence']].set_index(['rank_bin','popularity']).stack().reset_index(name='value').rename(columns={'level_2':'features'})
-
-        chart = alt.Chart(hits_c1_bin).mark_bar().encode(
+        hits_c = hits[(start_year <= hits['Year']) & (hits['Year'] <= end_year)]
+        hits_c_bin = hits_c.groupby('rank_bin').mean().reset_index()
+        hits_c_bin = hits_c_bin[['rank_bin','popularity','energy','speechiness','instrumentalness','valence']].set_index(['rank_bin','popularity']).stack().reset_index(name='value').rename(columns={'level_2':'features'})
+        charts=[]
+        for i in ['energy','speechiness','instrumentalness','valence']:
+            charts.append(alt.Chart(hits_c_bin[hits_c_bin['features'] == i]).mark_square().encode(
             x='rank_bin:N',
             y=alt.Y('value',scale=alt.Scale(zero=False)),
-            column='features:N',
             color='features:N',
-            opacity='popularity:Q'
-        )
-        chart1 = alt.Chart(hits_c1_bin).mark_bar().encode(
-            x='features:N',
-            y=alt.Y('value',scale=alt.Scale(zero=False)),
-            column='rank_bin:N',
-            color='features:N',
-            opacity='popularity:Q'
-        )
-        chart2 = alt.Chart(hits_c1_bin).mark_bar().encode(
-            x='features:N',
-            y=alt.Y('value',scale=alt.Scale(zero=False)),
-            column='rank_bin:N',
-            color='features:N',
-            opacity='popularity:Q'
-        )
-        
-        chart_describ=""
-        chart1_describ=""
-        chart2_describ=""
+            opacity='popularity:Q',
+            size= 'popularity:Q'
+            ))
+        chart = (charts[0]+charts[1]+charts[2]+charts[3]).properties(
+            width=900,height=280,title="Vibe features in different strata of the charts")
+    
 
+        hits_c1 = hits.groupby(['key','mode']).size().reset_index(name='cnt')
+        chart2 = alt.Chart(hits_c1).mark_bar().encode(
+            x='key:N',
+            y='cnt:Q',
+            color='mode:N'
+        ).properties(width=450,height=300, title="Musical features in different strata of the charts")
+
+
+        hits_c2 = hits.groupby(['Year','time_signature']).size().reset_index(name='cnt')
+        hits_c2['ts_perct']=hits_c2['cnt']/100
+        # hits_c2_2 = hits[['Year','tempo','duration_ms']].set_index(['Year']).stack().reset_index(name='value').rename(columns={'level_1':'features'})
+        chart1 = (alt.Chart(hits_c2[hits_c2['time_signature']==4]).mark_line(point=True).encode(
+            x=alt.X('Year',scale=alt.Scale(zero=False)),
+            y=alt.Y('ts_perct:Q',scale=alt.Scale(zero=False))
+        ).properties(width=300,height=300, title="4/4 Time signature percentage")| alt.Chart(hits[['Year','duration_ms','tempo']]).mark_boxplot().encode(
+            x=alt.X('Year',scale=alt.Scale(zero=False)),
+            y=alt.Y('tempo:Q')
+        ).properties(width=300,height=300, title="Tempo")| alt.Chart(hits[['Year','duration_ms','tempo']]).mark_boxplot().encode(
+            x=alt.X('Year',scale=alt.Scale(zero=False)),
+            y=alt.Y('duration_ms:Q')
+        ).properties(width=300,height=300, title="Duration(ms)"))
+        
+        chart_describ="""
+        Energy is a measure from 0.0 to 1.0 and represents a perceptual measure of intensity and activity. Typically, energetic tracks feel fast, loud, and noisy. \n 
+        Speechiness detects the presence of spoken words in a track. The more exclusively speech-like the recording (e.g. talk show, audio book, poetry), the closer to 1.0 the attribute value.\n 
+        Instrumentalness predicts whether a track contains no vocals. "Ooh" and "aah" sounds are treated as instrumental in this context. \n
+        Valence is a measure from 0.0 to 1.0 describing the musical positiveness conveyed by a track. Tracks with high valence sound more positive (e.g. happy, cheerful, euphoric), while tracks with low valence sound more negative (e.g. sad, depressed, angry).
+        """
+        chart1_describ="""
+        The key the track is in. Integers map to pitches using standard Pitch Class notation. E.g. 0 = C, 1 = C♯/D♭, 2 = D, and so on. If no key was detected, the value is -1.\n The key the track is in. Integers map to pitches using standard Pitch Class notation. E.g. 0 = C, 1 = C♯/D♭, 2 = D, and so on. If no key was detected, the value is -1.
+        """
+        chart2_describ="""
+        Time Signiture is an estimated time signature. The time signature (meter) is a notational convention to specify how many beats are in each bar (or measure). The time signature ranges from 3 to 7 indicating time signatures of "3/4", to "7/4".
+        Tempo is the overall estimated tempo of a track in beats per minute (BPM). In musical terminology, tempo is the speed or pace of a given piece and derives directly from the average beat duration.
+        Duration_ms is the duration of the track in milliseconds.
+        """
     return html.Div(
         [html.H2(page_title),
         html.Div("This is data visualization content for {} in {}:".format(page_title, year))]
