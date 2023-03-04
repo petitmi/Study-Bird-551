@@ -62,18 +62,25 @@ app.layout = dbc.Container([
     dbc.Col([dcc.RangeSlider(id='year-slider',min=2012,max=2022,value=[2012, 2022],step=1,marks=mark),
             html.Div(id="page-content"),
             html.Iframe(id='chart1',style={'border-width': '0', 'width': '100%', 'height': '400px'}),
+            html.Div(id="describe1"),
             html.Iframe(id='chart2',style={'border-width': '0', 'width': '100%', 'height': '400px'}),
-            html.Iframe(id='chart3',style={'border-width': '0', 'width': '100%', 'height': '400px'})],style=CONTENT_STYLE),])],
+            html.Div(id="describe2"),
+            html.Iframe(id='chart3',style={'border-width': '0', 'width': '100%', 'height': '400px'}),
+            html.Div(id="describe3")],style=CONTENT_STYLE),])],
     fluid=True,)
 
 # 4 outputs (one page content and three charts) and 4 inputs (three tabs and one year slider)
 @app.callback(
     [Output("page-content", "children"),
     Output("chart1", "srcDoc"),
+    Output("describe1", "children"),
     Output("chart2", "srcDoc"),
-    Output("chart3", "srcDoc")],
+    Output("describe2", "children"),
+    Output("chart3", "srcDoc"),
+    Output("describe3", "children")],
     [Input('url', 'pathname'),
     Input("year-slider", "value")])
+
 
 # render page content
 def render_page_content(pathname,year):
@@ -106,6 +113,10 @@ def generate_page_content(page_title, year):
         chart2=alt.Chart(pop).mark_bar().encode(
             x=alt.X('popularity:Q',scale=alt.Scale(zero=False)),
             y=alt.Y('Artist:N',sort='-x'))
+        
+        chart_describ=""
+        chart1_describ=""
+        chart2_describ=""
         
     elif page_title=="Lyrics Analysis":
         df = pd.read_excel('lyrics_dataset.xlsx')
@@ -142,6 +153,10 @@ def generate_page_content(page_title, year):
             tooltip=['Year','Frequency_love','Artist']).properties(
             title={'text':"Frequency of 'love' in {}".format(year), "anchor": "middle"},width=780)
         
+        chart_describ=""
+        chart1_describ=""
+        chart2_describ=""
+        
     elif page_title=="Tracks Analysis":
         hits = pd.read_csv('../data/processed/audio_data_processed.csv')
         hits.drop(["Unnamed: 0",'type','uri','track_href','analysis_url','id'], axis=1, inplace=True)
@@ -173,11 +188,14 @@ def generate_page_content(page_title, year):
             opacity='popularity:Q'
         )
         
+        chart_describ=""
+        chart1_describ=""
+        chart2_describ=""
 
     return html.Div(
         [html.H2(page_title),
         html.Div("This is data visualization content for {} in {}:".format(page_title, year))]
-    ),chart.to_html(),chart1.to_html(),chart2.to_html()
+    ),chart.to_html(),html.Div(chart_describ),chart1.to_html(),html.Div(chart1_describ),chart2.to_html(),html.Div(chart2_describ)
 
 if __name__ == "__main__":
     app.run_server(debug=True)
