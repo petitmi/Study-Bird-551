@@ -184,7 +184,7 @@ def generate_page_content(page_title, year):
             x='key:N',
             y='cnt:Q',
             color='mode:N'
-        ).properties(width=450,height=300, title="Musical features in different strata of the charts")
+        ).properties(width=900,height=300, title="Musical features in different strata of the charts")
 
 
         hits_c2 = hits.groupby(['Year','time_signature']).size().reset_index(name='cnt')
