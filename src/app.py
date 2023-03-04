@@ -68,7 +68,7 @@ app.layout = dbc.Container([
             html.Iframe(id='chart3',style={'border-width': '0', 'width': '100%', 'height': '400px'}),
             html.Div(id="describe3")],style=CONTENT_STYLE),]),
     dbc.Row([html.Hr(),
-            html.P("Data from BillBoard, Spotify and Musixmatch.")])],
+            html.P("Data from BillBoard, Spotify, Musixmatch and Genius.")])],
     fluid=True,)
 
 # 4 outputs (one page content and three charts) and 4 inputs (three tabs and one year slider)
@@ -121,7 +121,7 @@ def generate_page_content(page_title, year):
         chart2_describ=""
         
     elif page_title=="Lyrics Analysis":
-        df = pd.read_excel('lyrics_dataset.xlsx')
+        df = pd.read_excel('../data/processed/lyrics_dataset.xlsx')
         df = df.loc[(start_year <= df['Year']) & (df['Year'] <= end_year)]
         df['rank_bin'] = pd.cut(df['Rank'],bins=4,labels=['1-25','26-50','51-75','76-100'])
         df_bin = df.groupby(['rank_bin','Year']).mean().reset_index()
@@ -160,15 +160,23 @@ def generate_page_content(page_title, year):
         chart2_describ=""
         
     elif page_title=="Tracks Analysis":
+        # alt.renderers.set_embed_options(theme='dark')
+        alt.renderers.enable(embed_options={'theme': 'dark'})
 
         hits = pd.read_csv('../data/processed/audio_data_processed.csv')
         hits.drop(["Unnamed: 0",'type','uri','track_href','analysis_url','id'], axis=1, inplace=True)
-        hits['rank_bin'] = pd.cut(hits['Rank'],bins=10,labels=['1-10','11-20','21-30','31-40','41-50','51-60','61-70','71-80','81-90','91-100'])
+        titleParams=[alt.TitleParams(text = x,subtitle=y,anchor='start',fontSize = 24) for (x,y) in [
+                    ("Vibe Features","Energy, speechiness, instrumentalness,valence in different strata of the charts"),
+                    ("Rhythm Features", "Time signature, tempo, duration occurences"),
+                    ("Musical Features", "Musical key, mode occurences")]]
 
+        hits['rank_bin'] = pd.cut(hits['Rank'],bins=10,labels=['1-10','11-20','21-30','31-40','41-50','51-60','61-70','71-80','81-90','91-100'])
         hits_c = hits[(start_year <= hits['Year']) & (hits['Year'] <= end_year)]
         hits_c_bin = hits_c.groupby('rank_bin').mean().reset_index()
         hits_c_bin = hits_c_bin[['rank_bin','popularity','energy','speechiness','instrumentalness','valence']].set_index(['rank_bin','popularity']).stack().reset_index(name='value').rename(columns={'level_2':'features'})
         charts=[]
+
+
         for i in ['energy','speechiness','instrumentalness','valence']:
             charts.append(alt.Chart(hits_c_bin[hits_c_bin['features'] == i]).mark_square().encode(
             x='rank_bin:N',
@@ -178,15 +186,15 @@ def generate_page_content(page_title, year):
             size= 'popularity:Q'
             ))
         chart = (charts[0]+charts[1]+charts[2]+charts[3]).properties(
-            width=900,height=280,title="Vibe features in different strata of the charts")
+                width=900,height=250, title = titleParams[0])
     
 
         hits_c1 = hits.groupby(['key','mode']).size().reset_index(name='cnt')
         chart2 = alt.Chart(hits_c1).mark_bar().encode(
-            x='key:N',
-            y='cnt:Q',
+            x=alt.X('key:N',title='Musical Key'),
+            y=alt.Y('cnt:Q',title='Occurrence'),
             color='mode:N'
-        ).properties(width=900,height=300, title="Musical features in different strata of the charts")
+        ).properties(width=900,height=250, title=titleParams[1])
 
 
         hits_c2 = hits.groupby(['Year','time_signature']).size().reset_index(name='cnt')
@@ -195,16 +203,16 @@ def generate_page_content(page_title, year):
         chart1 = (alt.Chart(hits_c2[hits_c2['time_signature']==4]).mark_line(point=True).encode(
             x=alt.X('Year',scale=alt.Scale(zero=False)),
             y=alt.Y('ts_perct:Q',scale=alt.Scale(zero=False))
-        ).properties(width=300,height=300, title="4/4 Time signature percentage")| alt.Chart(hits[['Year','duration_ms','tempo']]).mark_boxplot().encode(
+        ).properties(width=250,height=250,title="4/4 Time signature percentage")| alt.Chart(hits[['Year','duration_ms','tempo']]).mark_boxplot().encode(
             x=alt.X('Year',scale=alt.Scale(zero=False)),
             y=alt.Y('tempo:Q')
-        ).properties(width=300,height=300, title="Tempo")| alt.Chart(hits[['Year','duration_ms','tempo']]).mark_boxplot().encode(
+        ).properties(width=250,height=250,title="Tempo")| alt.Chart(hits[['Year','duration_ms','tempo']]).mark_boxplot().encode(
             x=alt.X('Year',scale=alt.Scale(zero=False)),
             y=alt.Y('duration_ms:Q')
-        ).properties(width=300,height=300, title="Duration(ms)"))
+        ).properties(width=250,height=250,title="Duration(ms)")).properties(title=titleParams[2])
         
         chart_describ="""
-        【Vibe Analysis】 Energy is a measure from 0.0 to 1.0 and represents a perceptual measure of intensity and activity. Typically, energetic tracks feel fast, loud, and noisy. \n 
+        Energy is a measure from 0.0 to 1.0 and represents a perceptual measure of intensity and activity. Typically, energetic tracks feel fast, loud, and noisy. \n 
         Speechiness detects the presence of spoken words in a track. The more exclusively speech-like the recording (e.g. talk show, audio book, poetry), the closer to 1.0 the attribute value.\n 
         Instrumentalness predicts whether a track contains no vocals. "Ooh" and "aah" sounds are treated as instrumental in this context. \n
         Valence is a measure from 0.0 to 1.0 describing the musical positiveness conveyed by a track. Tracks with high valence sound more positive (e.g. happy, cheerful, euphoric), while tracks with low valence sound more negative (e.g. sad, depressed, angry).
@@ -218,8 +226,8 @@ def generate_page_content(page_title, year):
         Duration_ms is the duration of the track in milliseconds.
         """
     return html.Div(
-        [html.H2(page_title),
-        html.Div("This is data visualization content for {} in {}:".format(page_title, year))]
+        [html.H2(f"{page_title} between {year[0]} and {year[1]}:"),]
+        # html.Div("This is data visualization content for {} in {}:".format(page_title, year))]
     ),chart.to_html(),html.Div(chart_describ),chart1.to_html(),html.Div(chart1_describ),chart2.to_html(),html.Div(chart2_describ)
 
 if __name__ == "__main__":
