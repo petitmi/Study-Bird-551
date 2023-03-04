@@ -178,12 +178,13 @@ def generate_page_content(page_title, year):
 
 
         for i in ['energy','speechiness','instrumentalness','valence']:
-            charts.append(alt.Chart(hits_c_bin[hits_c_bin['features'] == i]).mark_square().encode(
+            charts.append(alt.Chart(hits_c_bin[hits_c_bin['features'] == i]).mark_point(filled=True).encode(
             x=alt.X('rank_bin:N',title='Rank bins'),
             y=alt.Y('value',scale=alt.Scale(zero=False),title='Occurences'),
             color='features:N',
             opacity='popularity:Q',
-            size= 'popularity:Q'
+            size= 'popularity:Q',
+            shape='features:N'
             ))
         chart = (charts[0]+charts[1]+charts[2]+charts[3]).properties(
                 width=900,height=250, title = titleParams[0])
