@@ -6,9 +6,8 @@ import plotly.express as px
 import numpy as np
 import altair as alt
 from vega_datasets import data
+import pandas as pd
 
-#举个例子用cars的数据
-cars = data.cars()
 
 # create a dash
 app = dash.Dash(external_stylesheets=[dbc.themes.QUARTZ])
@@ -95,7 +94,10 @@ def render_page_content(page_1_clicks, page_2_clicks, page_3_clicks, year):
 
 # output page content
 def generate_page_content(page_title, year):
-    if page_title=="Lyrics Analysis":
+    start_year=int(year[0])
+    end_year=int(year[1])
+    
+    if page_title=="Artist Analysis":
         chart = alt.Chart(cars).mark_circle(size=60).encode(
             x='Horsepower',
             y='Miles_per_Gallon',
@@ -112,19 +114,32 @@ def generate_page_content(page_title, year):
             color='Origin',
             tooltip=['Name', 'Horsepower', 'Miles_per_Gallon']).interactive()
         
-    elif page_title=="Artist Analysis":
-        chart = alt.Chart(cars).mark_bar().encode(
-            x='Horsepower',
-            y='count()',
-            color='Origin')
-        chart1 = alt.Chart(cars).mark_bar().encode(
-            x='Horsepower',
-            y='count()',
-            color='Origin')
-        chart2 = alt.Chart(cars).mark_bar().encode(
-            x='Horsepower',
-            y='count()',
-            color='Origin')
+    elif page_title=="Lyrics Analysis":
+        df = pd.read_excel('../data/processed/lyrics_dataset.xlsx')
+        df = df.loc[(start_year <= df['Year']) & (df['Year'] <= end_year)]
+        sentiment_counts = df['Sentiment'].value_counts()
+        source = pd.DataFrame({"category": ['Positive','Negative','Neutral'], "sentiment_counts": [sentiment_counts[0], sentiment_counts[1], sentiment_counts[2]]})
+
+        chart = alt.Chart(df).mark_bar().encode(
+            x='Year:N',
+            y=alt.Y('Word Count:Q', axis=alt.Axis(title='Lyrics Length')),
+            column='Rank:O',
+            color='Year:N',
+            tooltip=['Year','Rank','Artist']).properties(
+            title="Lyrics Length and Rank by Year").interactive()
+        
+        chart1 = alt.Chart(source).mark_arc().encode(
+            theta=alt.Theta(field="sentiment_counts", type="quantitative"),
+            color=alt.Color(field="category", type="nominal"),
+            tooltip=["sentiment_counts","category"]).properties(
+            title="Sentiment Counts in {}".format(year))
+        
+        chart2 = alt.Chart(df).mark_line(interpolate='basis').encode(
+            x=alt.X('Rank', scale=alt.Scale(domain=[0, 100])),
+            y=alt.Y('Frequency_love:Q', axis=alt.Axis(title='Frequency')),
+            color='Year:N',
+            tooltip=['Year','Frequency_love','Artist']).properties(
+            title="Frequency of 'love' in {}".format(year)).interactive()
         
     elif page_title=="Audio Analysis":
         chart = alt.Chart(cars).mark_line().encode(
@@ -143,7 +158,7 @@ def generate_page_content(page_title, year):
 
     return html.Div(
         [html.H2(page_title),
-        html.Div("This is some data visualization content for {} in {}:".format(page_title, year))]
+        html.Div("This is data visualization content for {} in {}:".format(page_title, year))]
     ),chart.to_html(),chart1.to_html(),chart2.to_html()
 
 if __name__ == "__main__":
