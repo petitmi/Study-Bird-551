@@ -118,7 +118,7 @@ def generate_page_content(page_title, year):
             wordcloud = WordCloud(
                 background_color='white',
                 collocations=False,                
-                colormap='hot',                
+                colormap='Set3_r',                
                 max_words=1200,                 
                 max_font_size=100,                 
                 scale=1,                 
