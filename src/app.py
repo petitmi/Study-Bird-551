@@ -62,18 +62,25 @@ app.layout = dbc.Container([
     dbc.Col([dcc.RangeSlider(id='year-slider',min=2012,max=2022,value=[2012, 2022],step=1,marks=mark),
             html.Div(id="page-content"),
             html.Iframe(id='chart1',style={'border-width': '0', 'width': '100%', 'height': '400px'}),
+            html.Div(id="describe1"),
             html.Iframe(id='chart2',style={'border-width': '0', 'width': '100%', 'height': '400px'}),
-            html.Iframe(id='chart3',style={'border-width': '0', 'width': '100%', 'height': '400px'})],style=CONTENT_STYLE),])],
+            html.Div(id="describe2"),
+            html.Iframe(id='chart3',style={'border-width': '0', 'width': '100%', 'height': '400px'}),
+            html.Div(id="describe3")],style=CONTENT_STYLE),])],
     fluid=True,)
 
 # 4 outputs (one page content and three charts) and 4 inputs (three tabs and one year slider)
 @app.callback(
     [Output("page-content", "children"),
     Output("chart1", "srcDoc"),
+    Output("describe1", "children"),
     Output("chart2", "srcDoc"),
-    Output("chart3", "srcDoc")],
+    Output("describe2", "children"),
+    Output("chart3", "srcDoc"),
+    Output("describe3", "children")],
     [Input('url', 'pathname'),
     Input("year-slider", "value")])
+
 
 # render page content
 def render_page_content(pathname,year):
@@ -107,32 +114,48 @@ def generate_page_content(page_title, year):
             x=alt.X('popularity:Q',scale=alt.Scale(zero=False)),
             y=alt.Y('Artist:N',sort='-x'))
         
+        chart_describ=""
+        chart1_describ=""
+        chart2_describ=""
+        
     elif page_title=="Lyrics Analysis":
-        df = pd.read_excel('../data/processed/lyrics_dataset.xlsx')
+        df = pd.read_excel('lyrics_dataset.xlsx')
         df = df.loc[(start_year <= df['Year']) & (df['Year'] <= end_year)]
+        df['rank_bin'] = pd.cut(df['Rank'],bins=4,labels=['1-25','26-50','51-75','76-100'])
+        df_bin = df.groupby(['rank_bin','Year']).mean().reset_index()
         sentiment_counts = df['Sentiment'].value_counts()
         source = pd.DataFrame({"category": ['Positive','Negative','Neutral'], "sentiment_counts": [sentiment_counts[0], sentiment_counts[1], sentiment_counts[2]]})
 
-        chart = alt.Chart(df).mark_bar().encode(
+        chart = alt.Chart(df_bin).mark_bar().encode(
             x='Year:N',
             y=alt.Y('Word Count:Q', axis=alt.Axis(title='Lyrics Length')),
-            column='Rank:O',
+            column=alt.Column('rank_bin:O',title=None),
             color='Year:N',
-            tooltip=['Year','Rank','Artist']).properties(
-            title="Lyrics Length and Rank by Year").interactive()
+            ).properties(
+            title={'text':"Lyrics Length and Rank by Year", "anchor": "middle"},width=180)
         
         chart1 = alt.Chart(source).mark_arc().encode(
             theta=alt.Theta(field="sentiment_counts", type="quantitative"),
             color=alt.Color(field="category", type="nominal"),
             tooltip=["sentiment_counts","category"]).properties(
-            title="Sentiment Counts in {}".format(year))
+            title={'text':"Sentiment Counts in {}".format(year), "anchor": "middle"})
         
-        chart2 = alt.Chart(df).mark_line(interpolate='basis').encode(
-            x=alt.X('Rank', scale=alt.Scale(domain=[0, 100])),
-            y=alt.Y('Frequency_love:Q', axis=alt.Axis(title='Frequency')),
+        chart1 = chart1|alt.Chart(df).mark_boxplot().encode(
+            x=alt.X('Year:N'),
+            y=alt.Y('Sentiment Polarity:Q', axis=alt.Axis(title='Sentiment Score')),
+           ).properties(
+            title={'text':"Boxplot of Sentiment Score in {}".format(year), "anchor": "middle"},width=300)
+        
+        chart2 = alt.Chart(df).mark_area(interpolate='basis').encode(
+            x=alt.X('Rank'),
+            y=alt.Y('Frequency_love:Q', axis=alt.Axis(title='Frequency'),scale=alt.Scale(domain=[0, 35])),
             color='Year:N',
             tooltip=['Year','Frequency_love','Artist']).properties(
-            title="Frequency of 'love' in {}".format(year)).interactive()
+            title={'text':"Frequency of 'love' in {}".format(year), "anchor": "middle"},width=780)
+        
+        chart_describ=""
+        chart1_describ=""
+        chart2_describ=""
         
     elif page_title=="Tracks Analysis":
 
@@ -155,6 +178,9 @@ def generate_page_content(page_title, year):
         chart = (charts[0]+charts[1]+charts[2]+charts[3]).properties(
             width=900,height=300,title="Vibe features in different strata of the charts")
         
+        chart_describ=""
+        chart1_describ=""
+        chart2_describ=""
 
         hits_c1 = hits.groupby(['key','mode']).size().reset_index(name='cnt')
         chart2 = alt.Chart(hits_c1).mark_bar().encode(
@@ -181,7 +207,7 @@ def generate_page_content(page_title, year):
     return html.Div(
         [html.H2(page_title),
         html.Div("This is data visualization content for {} in {}:".format(page_title, year))]
-    ),chart.to_html(),chart1.to_html(),chart2.to_html()
+    ),chart.to_html(),html.Div(chart_describ),chart1.to_html(),html.Div(chart1_describ),chart2.to_html(),html.Div(chart2_describ)
 
 if __name__ == "__main__":
     app.run_server(debug=True)
