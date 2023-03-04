@@ -101,17 +101,17 @@ def generate_page_content(page_title, year):
         df = pd.read_csv('../data/processed/second.csv')
         df = df.loc[(start_year <= df['Year']) & (df['Year'] <= end_year)]
         df = df.drop_duplicates(subset=['Artist'])
-        pop=df[df['popularity']>90]
+        pop=df[df['popularity']>85]
         
         chart=alt.Chart(pop).mark_bar().encode(
-            x=alt.X('popularity:Q',scale=alt.Scale(zero=False)),
-            y=alt.Y('Artist:N',sort='-x')
+            y=alt.Y('popularity:Q',scale=alt.Scale(zero=False)),
+            x=alt.X('Artist:N',sort='-y'))
         chart1=alt.Chart(pop).mark_bar().encode(
             x=alt.X('popularity:Q',scale=alt.Scale(zero=False)),
-            y=alt.Y('Artist:N',sort='-x')
+            y=alt.Y('Artist:N',sort='-x'))
         chart2=alt.Chart(pop).mark_bar().encode(
             x=alt.X('popularity:Q',scale=alt.Scale(zero=False)),
-            y=alt.Y('Artist:N',sort='-x')
+            y=alt.Y('Artist:N',sort='-x'))
         
     elif page_title=="Lyrics Analysis":
         df = pd.read_excel('../data/processed/lyrics_dataset.xlsx')
