@@ -133,24 +133,9 @@ def generate_page_content(page_title, year):
         df['rank_bin10'] = pd.cut(df['Rank'],bins=10,labels=['1-10','11-20','21-30','31-40','41-50','51-60','61-70','71-80','81-90','91-100'])
         df_bin10 = df.groupby(['rank_bin10','Year']).mean().reset_index()
    
-<<<<<<< HEAD
 
 
 
-=======
-        df['word cloud'] = df['Clean Lyrics']
-        remove_words = ['verse', 'chorus', 'oh', 'want', 'yeah', 'wan', 'na', 'got', 'might','feat']
-        for word in remove_words:
-            df['word cloud'] = df['word cloud'].str.replace(fr'\b{word}\b', '', regex=True)
-        text = ' '.join(df['word cloud'])
-        wordcloud = WordCloud(width=800, height=300, background_color='white').generate(text)
-
-        plt.figure(figsize = (10, 4), facecolor = None)
-        plt.imshow(wordcloud)
-        plt.axis("off")
-        plt.tight_layout(pad = 0)
-        plt.savefig(f'../data/processed/wordcloud.png',dpi = 80)
->>>>>>> cad9aa331b89e8e1c9fb3464066f59b16a4fd8f8
         
         if start_year==end_year:
             chart = alt.Chart(df_bin10).mark_bar(interpolate='basis').encode(
