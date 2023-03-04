@@ -202,10 +202,10 @@ def generate_page_content(page_title, year):
             for word in remove_words:
                 df['word cloud'] = df['word cloud'].str.replace(fr'\b{word}\b', '', regex=True)
             text = ' '.join(df['word cloud'])
-            wordcloud = WordCloud(width=800, height=300, background_color='white').generate(text)
+            wordcloud = WordCloud(width=1200, height=300, background_color='white').generate(text)
             image_filename = '../data/processed/wordcloud.png'
             plt.switch_backend('Agg') 
-            plt.figure(figsize = (10, 4), facecolor = None)
+            plt.figure(figsize = (12, 4), facecolor = None)
             plt.imshow(wordcloud)
             plt.axis("off")
             plt.tight_layout(pad = 0)
