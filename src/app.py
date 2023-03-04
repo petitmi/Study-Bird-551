@@ -98,25 +98,20 @@ def generate_page_content(page_title, year):
     end_year=int(year[1])
     
     if page_title=="Artist Analysis":
-        chart=None
-        chart1=None
-        chart2=None
-        pass
-    #     chart = alt.Chart(cars).mark_circle(size=60).encode(
-    #         x='Horsepower',
-    #         y='Miles_per_Gallon',
-    #         color='Origin',
-    #         tooltip=['Name', 'Horsepower', 'Miles_per_Gallon']).interactive()
-    #     chart1 = alt.Chart(cars).mark_circle(size=60).encode(
-    #         x='Horsepower',
-    #         y='Miles_per_Gallon',
-    #         color='Origin',
-    #         tooltip=['Name', 'Horsepower', 'Miles_per_Gallon']).interactive()
-    #     chart2 = alt.Chart(cars).mark_circle(size=60).encode(
-    #         x='Horsepower',
-    #         y='Miles_per_Gallon',
-    #         color='Origin',
-    #         tooltip=['Name', 'Horsepower', 'Miles_per_Gallon']).interactive()
+        df = pd.read_csv('../data/processed/second.csv')
+        df = df.loc[(start_year <= df['Year']) & (df['Year'] <= end_year)]
+        df = df.drop_duplicates(subset=['Artist'])
+        pop=df[df['popularity']>90]
+        
+        chart=alt.Chart(pop).mark_bar().encode(
+            x=alt.X('popularity:Q',scale=alt.Scale(zero=False)),
+            y=alt.Y('Artist:N',sort='-x')
+        chart1=alt.Chart(pop).mark_bar().encode(
+            x=alt.X('popularity:Q',scale=alt.Scale(zero=False)),
+            y=alt.Y('Artist:N',sort='-x')
+        chart2=alt.Chart(pop).mark_bar().encode(
+            x=alt.X('popularity:Q',scale=alt.Scale(zero=False)),
+            y=alt.Y('Artist:N',sort='-x')
         
     elif page_title=="Lyrics Analysis":
         df = pd.read_excel('../data/processed/lyrics_dataset.xlsx')
