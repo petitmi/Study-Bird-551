@@ -7,7 +7,9 @@ import numpy as np
 import altair as alt
 from vega_datasets import data
 import pandas as pd
-
+import base64
+from wordcloud import WordCloud
+import matplotlib.pyplot as plt
 
 # create a dash
 app = dash.Dash(external_stylesheets=[dbc.themes.QUARTZ])
@@ -121,14 +123,43 @@ def generate_page_content(page_title, year):
         chart2_describ=""
         
     elif page_title=="Lyrics Analysis":
+        
         df = pd.read_excel('../data/processed/lyrics_dataset.xlsx')
         df = df.loc[(start_year <= df['Year']) & (df['Year'] <= end_year)]
         df['rank_bin'] = pd.cut(df['Rank'],bins=4,labels=['1-25','26-50','51-75','76-100'])
         df_bin = df.groupby(['rank_bin','Year']).mean().reset_index()
         sentiment_counts = df['Sentiment'].value_counts()
         source = pd.DataFrame({"category": ['Positive','Negative','Neutral'], "sentiment_counts": [sentiment_counts[0], sentiment_counts[1], sentiment_counts[2]]})
+        df['rank_bin10'] = pd.cut(df['Rank'],bins=10,labels=['1-10','11-20','21-30','31-40','41-50','51-60','61-70','71-80','81-90','91-100'])
+        df_bin10 = df.groupby(['rank_bin10','Year']).mean().reset_index()
+   
+        df['word cloud'] = df['Clean Lyrics']
+        remove_words = ['verse', 'chorus', 'oh', 'want', 'yeah', 'wan', 'na', 'got', 'might','feat']
+        for word in remove_words:
+            df['word cloud'] = df['word cloud'].str.replace(fr'\b{word}\b', '', regex=True)
+        text = ' '.join(df['word cloud'])
+        wordcloud = WordCloud(width=800, height=800, background_color='white').generate(text)
 
-        chart = alt.Chart(df_bin).mark_bar().encode(
+        plt.figure(figsize = (5, 5), facecolor = None)
+        plt.imshow(wordcloud)
+        plt.axis("off")
+        plt.tight_layout(pad = 0)
+        plt.savefig(f'../data/processed/wordcloud.png',dpi = 80)
+        
+        if start_year==end_year:
+            chart = alt.Chart(df_bin10).mark_bar(interpolate='basis').encode(
+                x=alt.X('Year:N'),
+                y=alt.Y('Frequency_love:Q', stack=True,axis=alt.Axis(title='Frequency')),
+                color='rank_bin10:O').properties(
+                title={'text':"Frequency of 'love' in {}".format(year), "anchor": "middle"},width=780)
+        else:
+            chart = alt.Chart(df_bin10).mark_area(interpolate='basis').encode(
+                x=alt.X('Year:N'),
+                y=alt.Y('Frequency_love:Q', stack=True,axis=alt.Axis(title='Frequency')),
+                color='rank_bin10:O').properties(
+                title={'text':"Frequency of 'love' in {}".format(year), "anchor": "middle"},width=780)
+            
+        chart1 = alt.Chart(df_bin).mark_bar().encode(
             x='Year:N',
             y=alt.Y('Word Count:Q', axis=alt.Axis(title='Lyrics Length')),
             column=alt.Column('rank_bin:O',title=None),
@@ -136,28 +167,51 @@ def generate_page_content(page_title, year):
             ).properties(
             title={'text':"Lyrics Length and Rank by Year", "anchor": "middle"},width=180)
         
-        chart1 = alt.Chart(source).mark_arc().encode(
+        chart2 = alt.Chart(source).mark_arc().encode(
             theta=alt.Theta(field="sentiment_counts", type="quantitative"),
             color=alt.Color(field="category", type="nominal"),
             tooltip=["sentiment_counts","category"]).properties(
             title={'text':"Sentiment Counts in {}".format(year), "anchor": "middle"})
         
-        chart1 = chart1|alt.Chart(df).mark_boxplot().encode(
+        chart3 = alt.Chart(df).mark_boxplot().encode(
             x=alt.X('Year:N'),
             y=alt.Y('Sentiment Polarity:Q', axis=alt.Axis(title='Sentiment Score')),
            ).properties(
             title={'text':"Boxplot of Sentiment Score in {}".format(year), "anchor": "middle"},width=300)
         
-        chart2 = alt.Chart(df).mark_area(interpolate='basis').encode(
-            x=alt.X('Rank'),
-            y=alt.Y('Frequency_love:Q', axis=alt.Axis(title='Frequency'),scale=alt.Scale(domain=[0, 35])),
-            color='Year:N',
-            tooltip=['Year','Frequency_love','Artist']).properties(
-            title={'text':"Frequency of 'love' in {}".format(year), "anchor": "middle"},width=780)
+        chart2 = alt.hconcat(
+            chart2,
+            chart3,
+            spacing=120)
         
-        chart_describ=""
-        chart1_describ=""
-        chart2_describ=""
+        chart2 = chart2.configure_legend(
+            orient='left',
+            symbolSize=150, 
+            symbolType='circle')
+        
+        image_filename = '../data/processed/wordcloud.png'
+        encoded_image = base64.b64encode(open(image_filename, 'rb').read())
+        chart_describ=[dcc.Markdown("""
+        - Divide the top 100 songs into 10 groups; 
+        - The X-axis represents the year; 
+        - The Y-axis is the frequency of the keyword 'love'; 
+        - From the figure, we can see the frequency of 'love' and the trend of their frequency every year.
+        """)]
+       
+        chart1_describ=dcc.Markdown("""
+        - Divide the top 100 songs into 4 groups; 
+        - The X-axis represents the year; 
+        - The Y-axis is the lyrics length; 
+        - From the figure, From the figure, we can compare each year‘s lyrics length in the four rank groups.
+        """)
+        
+        chart2_describ=[dcc.Markdown("""
+        - Chart on the left is a pie chart representing the proportion of positive, negative and neutral lyrics in the selected year. 
+        - Placing the mouse on the pie chart can show the specific number of songs; 
+        - The chart on the right is the boxplot which displays ranges within sentiment scores for the selected year; 
+        - sentiment score ranges from -1 to 1. (-1 is the most negative, 1 is the most positive, and 0 is neutral).
+        """),html.Div([html.Img(src='data:image/png;base64,{}'.format(encoded_image.decode()))])]
+        
         
     elif page_title=="Tracks Analysis":
 
