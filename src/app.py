@@ -115,7 +115,7 @@ def generate_page_content(page_title, year):
             tooltip=['Name', 'Horsepower', 'Miles_per_Gallon']).interactive()
         
     elif page_title=="Lyrics Analysis":
-        df = pd.read_excel('lyrics_dataset.xlsx')
+        df = pd.read_excel('../data/processed/lyrics_dataset.xlsx')
         df = df.loc[(start_year <= df['Year']) & (df['Year'] <= end_year)]
         sentiment_counts = df['Sentiment'].value_counts()
         source = pd.DataFrame({"category": ['Positive','Negative','Neutral'], "sentiment_counts": [sentiment_counts[0], sentiment_counts[1], sentiment_counts[2]]})
