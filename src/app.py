@@ -66,7 +66,9 @@ app.layout = dbc.Container([
             html.Iframe(id='chart2',style={'border-width': '0', 'width': '100%', 'height': '400px'}),
             html.Div(id="describe2"),
             html.Iframe(id='chart3',style={'border-width': '0', 'width': '100%', 'height': '400px'}),
-            html.Div(id="describe3")],style=CONTENT_STYLE),])],
+            html.Div(id="describe3")],style=CONTENT_STYLE),]),
+    dbc.Row([html.Hr(),
+            html.P("Data from BillBoard, Spotify and Musixmatch.")])],
     fluid=True,)
 
 # 4 outputs (one page content and three charts) and 4 inputs (three tabs and one year slider)
