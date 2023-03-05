@@ -122,7 +122,7 @@ def generate_page_content(page_title, year):
                 max_font_size=100,                 
                 scale=1,                 
                 random_state=1,                
-                width=1200,
+                width=900,
                 height=200).generate_from_frequencies(string)
             wordcloud.to_file(f'{wordcloud_pic}')     
             return wordcloud_pic
@@ -165,7 +165,7 @@ def generate_page_content(page_title, year):
                                 size=alt.Size('size',legend=None),
                                 color=alt.Color('size',legend=None),
                                 tooltip=['Artist','genres']
-                                ).properties(width=1100,height=310).interactive()
+                                ).properties(width=900,height=310).interactive()
         
         chart1=alt.Chart(df1,title='Debut year distribution').mark_bar().encode(
                         y=alt.Y('count()',scale=alt.Scale(zero=False),title='Artist number'),
@@ -213,9 +213,6 @@ def generate_page_content(page_title, year):
         df['rank_bin10'] = pd.cut(df['Rank'],bins=10,labels=['1-10','11-20','21-30','31-40','41-50','51-60','61-70','71-80','81-90','91-100'])
         df_bin10 = df.groupby(['rank_bin10','Year']).mean().reset_index()
    
-
-
-
         
         if start_year==end_year:
             chart = alt.Chart(df_bin10).mark_bar(interpolate='basis').encode(
