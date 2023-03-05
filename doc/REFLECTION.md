@@ -1,6 +1,6 @@
 # Reflection for Study Bird 551 Project
-**Topic: **Billboard Top100 Hot🔥🔥Songs🔥🔥Analysis
-**Group Members: **Nyx, Tia, Yuhong
+**Topic:** Billboard Top100 Hot🔥🔥Songs🔥🔥Analysis
+**Group Members:** Nyx, Tia, Yuhong
 
 
 ## Implemented  
