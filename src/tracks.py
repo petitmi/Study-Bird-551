@@ -7,7 +7,7 @@ from dash import Dash, dcc, html
 
 class TrackChart:
     def __init__(self,start_year,end_year):
-        hits = pd.read_csv('../data/processed/audio_data_processed.csv')
+        hits = pd.read_csv('./data/processed/audio_data_processed.csv')
         hits.drop(["Unnamed: 0",'type','uri','track_href','analysis_url','id'], axis=1, inplace=True)
         hits['rank_bin'] = pd.cut(hits['Rank'],bins=10,labels=['1-10','11-20','21-30','31-40','41-50','51-60','61-70','71-80','81-90','91-100'])
         self.titleParams = [alt.TitleParams(text = x,subtitle=y,anchor='start',fontSize = 24) for (x,y) in [
