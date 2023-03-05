@@ -1,6 +1,6 @@
 # StudyBird551
-**Heroku:https://study-bird-dash-app.herokuapp.com**
-StudyBird551 is a analysis visualization dashboard for billboard top100 hottest songs over year.
+**Website on Heroku:** https://study-bird-dash-app.herokuapp.com 
+**StudyBird551** is a analysis visualization dashboard for billboard top100 hottest songs over year.
 
 ## Description
 The dashboard contains a sidebar and three main pages. We use python code to create this demo of Dash, and we also chose the appropriate color scheme for the chart based on our music theme. you can find code [here](./web-apps/dash.ipynb).
