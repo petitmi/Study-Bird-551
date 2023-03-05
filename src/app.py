@@ -14,6 +14,8 @@ import matplotlib.pyplot as plt
 # create a dash
 app = dash.Dash(external_stylesheets=[dbc.themes.QUARTZ])
 
+server = app.server
+
 # location settings for sidebar
 SIDEBAR_STYLE = {
     # "position": "fixed",
