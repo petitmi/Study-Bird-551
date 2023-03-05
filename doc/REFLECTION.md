@@ -1,5 +1,5 @@
 # Reflection for Study Bird 551 Project
-**Topic:** Billboard Top100 Hot🔥🔥Songs🔥🔥Analysis
+**Topic:** Billboard Top100 Hot🔥🔥Songs🔥🔥Analysis  
 **Group Members:** Nyx, Tia, Yuhong
 
 
@@ -59,17 +59,18 @@
 ## Other reflections:
 
 1. **Analysis ideas** 
-- The process of determining the analysis theme do get a quick agreement, each member has a strong interest in music analysis, and actively communicate out a very specific application scenario. 
-- Realization of the scenario: When thinking about what specifically can be done also need to combine what data can be available, sometimes get caught in the confusion. Finally, I found that starting from thinking about how to do it specifically to thinking about what I want to analyze first will have better results and can achieve what I want more effectively.
+   - The process of determining the analysis topic was quickly agreed upon, with each member taking a keen interest in music analysis, and actively communicating out a very specific application scenario. 
+   - In the processing of determining the details of the implemention, we did get into some confusion when choosing variables and chart types. Fortunately, we eventually found a more efficient way to build the whole structure, that instead of starting from the details directly but from our view of the subject and the specifics we care about.
 2. **Data processing**
-- Data sources involved in crawlers, interfaces, but fortunately started to do early, in the middle of the problem of restricted access to have time to deal with. For example, the interface document shows the existence of a field, but not actually; or the interface can only be accessed 70 times a day, but we actually call 1000 times.
-- Data cleaning costs a lot, fortunately for learning pandas. but still need to query a lot of information. 70% of the time spent on cleaning. In the future, as much as possible to assess the reliability of data in advance 
-- Debug: visualization of the main application altair, more familiar, but because plotly + altair + python there are version differences, halfway through the encounter some function failure, such as html. 
-- Existing modules, resources are not enough to achieve the goal: some want to achieve the fancy chart, altair can not achieve, together with a meeting to discuss to determine a method.
+   - Data sources involved in multiple crawlers, APIs. We  the data collection and processing early to save time for handling the potential problems, such as restricted access, blocked access and wrong information in the APIs docs. For example, there is one API document shows the existence of a field, but not actually; or the interface can only be accessed 70 times a day, but we actually need to call 1000 times.
+   - 70% of the time spent on data wrangling and cleaning for some similar ditto problems. In the future, as much as possible to assess the reliability of data in advance.  
+   - Debug caused more time than we expected: Multiple modules, such as plotly, altair, pandas and CSS, HTML are used to implemented. There happened failures due to version adaptation differences among those modules.
+    - Existing modules, resources are not enough to achieve the ideal chart, for example altair has no function to reach wordcloud chart. We together discussed and  determined the alternative methods in the daily group meeting.
 3. **Aesthetics and consistency**  
-The earliest color series was set first, and we continued to communicate during the process
+The color themes were set at the very beginning, so basic aesthetic consensus was not an issue for us.
 5. **Collaboration**  
-In addition to each person being responsible for an analysis page, other tasks were distributed almost equally, such as overall layout code, deployment code, etc. In order to take advantage of teamwork, a person to complete the framework, in the details of the difficulties encountered or need to discuss are actively cooperate with the discussion program and help debug, etc., such as the sidebar bugs.
+   - In addition to each person being responsible for an analysis page, other extra tasks were distributed almost equally, such as overall layout code, deployment code, etc. 
+   - In order to take advantage of teamwork, others actively cooperate with the discussion and help debug when it comes to some difficulties encountered. Such as the sidebar bugs.
 
 <!-- 
 1. 分析思路：（1）分析主题的确定过程做得到快速达成一致，每位成员都对音乐分析有浓厚的兴趣，并积极沟通出了非常具体的应用场景。（2）实现方案：在思考具体能做什么的时候还需要结合能有什么数据，有时候会陷入混乱中。最后发现从想具体怎么做开始转变为先思考想要分析什么，会有更好的效果，能更有效的达到自己想要的。
