@@ -56,7 +56,7 @@
 1. 每个分析主题选取了认为最重要的维度，没有覆盖更多更全的维度。改善方法是可以增加选择组件。
 2. 更细节的功能未能实现：比如通过搜索关键词来展示歌词的分析。 -->
 
-## Other replection:
+## Other reflections:
 
 1. Analysis ideas 
 - The process of determining the analysis theme do get a quick agreement, each member has a strong interest in music analysis, and actively communicate out a very specific application scenario. 
