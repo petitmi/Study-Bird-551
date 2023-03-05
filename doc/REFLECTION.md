@@ -69,7 +69,7 @@
 3. **Aesthetics and consistency**  
 The earliest color series was set first, and we continued to communicate during the process
 5. **Collaboration**  
-- In addition to each person being responsible for an analysis page, other tasks were distributed almost equally, such as overall layout code, deployment code, etc. In order to take advantage of teamwork, a person to complete the framework, in the details of the difficulties encountered or need to discuss are actively cooperate with the discussion program and help debug, etc., such as the sidebar bugs.
+In addition to each person being responsible for an analysis page, other tasks were distributed almost equally, such as overall layout code, deployment code, etc. In order to take advantage of teamwork, a person to complete the framework, in the details of the difficulties encountered or need to discuss are actively cooperate with the discussion program and help debug, etc., such as the sidebar bugs.
 
 <!-- 
 1. 分析思路：（1）分析主题的确定过程做得到快速达成一致，每位成员都对音乐分析有浓厚的兴趣，并积极沟通出了非常具体的应用场景。（2）实现方案：在思考具体能做什么的时候还需要结合能有什么数据，有时候会陷入混乱中。最后发现从想具体怎么做开始转变为先思考想要分析什么，会有更好的效果，能更有效的达到自己想要的。
