@@ -105,7 +105,7 @@ def generate_page_content(page_title, year):
     end_year=int(year[1])
     alt.renderers.set_embed_options(theme='dark')
     if page_title=="Artist Analysis":
-        df = pd.read_csv('../data/processed/artist_process_data.csv',encoding="ISO-8859-1")
+        df = pd.read_csv('./data/processed/artist_process_data.csv',encoding="ISO-8859-1")
         df = df.loc[(start_year <= df['Year']) & (df['Year'] <= end_year)]
         df1 = df.drop_duplicates(subset=['Artist'])
         df1['year']=pd.DatetimeIndex(df1['first_year']).year
@@ -115,7 +115,7 @@ def generate_page_content(page_title, year):
             from wordcloud import WordCloud
             import os
 
-            wordcloud_pic = f"../data/processed/wordcloud_{i}.png"
+            wordcloud_pic = f"./data/processed/wordcloud_{i}.png"
             wordcloud = WordCloud(
                 background_color='white',
                 collocations=False,                
@@ -135,10 +135,10 @@ def generate_page_content(page_title, year):
         word_cloud(a,1)
         word_cloud(b,2)
 
-        image_filename1 = '../data/processed/wordcloud_1.png'
+        image_filename1 = './data/processed/wordcloud_1.png'
         encoded_image1 = base64.b64encode(open(image_filename1, 'rb').read())
         
-        image_filename2 = '../data/processed/wordcloud_2.png'
+        image_filename2 = './data/processed/wordcloud_2.png'
         encoded_image2 = base64.b64encode(open(image_filename2, 'rb').read())
         
         def word_count(str):
@@ -206,7 +206,7 @@ def generate_page_content(page_title, year):
         
     elif page_title=="Lyrics Analysis":
         
-        df = pd.read_excel('../data/processed/lyrics_dataset.xlsx')
+        df = pd.read_excel('./data/processed/lyrics_dataset.xlsx')
         df = df.loc[(start_year <= df['Year']) & (df['Year'] <= end_year)]
         df['rank_bin'] = pd.cut(df['Rank'],bins=4,labels=['1-25','26-50','51-75','76-100'])
         df_bin = df.groupby(['rank_bin','Year']).mean().reset_index()
@@ -282,7 +282,7 @@ def generate_page_content(page_title, year):
                 df['word cloud'] = df['word cloud'].str.replace(fr'\b{word}\b', '', regex=True)
             text = ' '.join(df['word cloud'])
             wordcloud = WordCloud(width=1200, height=300, background_color='white').generate(text)
-            image_filename = '../data/processed/wordcloud.png'
+            image_filename = './data/processed/wordcloud.png'
             plt.switch_backend('Agg') 
             plt.figure(figsize = (12, 4), facecolor = None)
             plt.imshow(wordcloud)
@@ -303,7 +303,7 @@ def generate_page_content(page_title, year):
         
     elif page_title=="Tracks Analysis":
 
-        from tracks import TrackChart
+        from src.tracks import TrackChart
         tracks = TrackChart(start_year,end_year)
         chart, chart_describ = tracks.get_tracks_chart()
         chart1,  chart1_describ= tracks.get_tracks_chart1()
