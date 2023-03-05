@@ -1,3 +1,4 @@
+python==3.7
 dash
 dash_bootstrap_components
 pandas
@@ -5,3 +6,7 @@ statsmodels
 altair
 gunicorn
 plotly
+vega_datasets
+numpy
+matplotlib
+wordcloud==1.8.2.2
