@@ -58,17 +58,17 @@
 
 ## Other reflections:
 
-1. Analysis ideas 
+1. **Analysis ideas** 
 - The process of determining the analysis theme do get a quick agreement, each member has a strong interest in music analysis, and actively communicate out a very specific application scenario. 
 - Realization of the scenario: When thinking about what specifically can be done also need to combine what data can be available, sometimes get caught in the confusion. Finally, I found that starting from thinking about how to do it specifically to thinking about what I want to analyze first will have better results and can achieve what I want more effectively.
-2. Data processing
+2. **Data processing**
 - Data sources involved in crawlers, interfaces, but fortunately started to do early, in the middle of the problem of restricted access to have time to deal with. For example, the interface document shows the existence of a field, but not actually; or the interface can only be accessed 70 times a day, but we actually call 1000 times.
 - Data cleaning costs a lot, fortunately for learning pandas. but still need to query a lot of information. 70% of the time spent on cleaning. In the future, as much as possible to assess the reliability of data in advance 
 - Debug: visualization of the main application altair, more familiar, but because plotly + altair + python there are version differences, halfway through the encounter some function failure, such as html. 
 - Existing modules, resources are not enough to achieve the goal: some want to achieve the fancy chart, altair can not achieve, together with a meeting to discuss to determine a method.
-3. Aesthetics and consistency
+3. **Aesthetics and consistency**  
 The earliest color series was set first, and we continued to communicate during the process
-5. Collaboration
+5. **Collaboration**  
 - In addition to each person being responsible for an analysis page, other tasks were distributed almost equally, such as overall layout code, deployment code, etc. In order to take advantage of teamwork, a person to complete the framework, in the details of the difficulties encountered or need to discuss are actively cooperate with the discussion program and help debug, etc., such as the sidebar bugs.
 
 <!-- 
