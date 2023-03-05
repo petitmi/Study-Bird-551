@@ -40,7 +40,7 @@ If you are interested or have questions, please feel free to contact [Nyx](mailt
 
 ## Longing for More?  
 **A fictional story behind**    
-Yuhong🧞‍♀️ is a professional music producer and recently received a tough task from CEO Nyx🥷 to prepare a new album for a new singer Tia🧑‍🎤, and to help Tia turn into a successful artist who has at least one million followers to make money from. Or Nyx will fire them. Or Nyx will fire them. Tia just parachuted into the company and has no idea in music but a rumor that she is Nyx’s Nephew.    
+Yuhong🧞‍♀️ is a professional music producer and recently received a tough task from CEO Nyx🥷 to prepare a new album for a new singer Tia🧑‍🎤, and to help Tia turn into a successful artist who has at least one million followers to make money from. Or Nyx will fire her. Tia just parachuted into the company and has no idea in music but a rumor that she is Nyx’s Nephew.    
 So Yuhong came to us to get the tricks about how will songs and artists become successful in music markets and what features they own. We only showed her `StudyBird551`.  
 She first browsed the [artist page](https://study-bird-dash-app.herokuapp.com/artist). She *filtered* their genres, *sorted* their activity and popularity, number of albums and overall album popularity, she easily [chose] the artists genres.  
 Then Yuhong opened the [lyrics page](https://study-bird-dash-app.herokuapp.com/lyrics). She *compared* the themes of the hot songs, *looked through* the word distribution of them to know the topic listeners care about. She *filtered* the keys beats and rhythms of songs to adapt Tia’s narrow sound range.   
