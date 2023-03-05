@@ -46,5 +46,5 @@ She first browsed the [artist page](https://study-bird-dash-app.herokuapp.com/ar
 Then Yuhong opened the [lyrics page](https://study-bird-dash-app.herokuapp.com/lyrics). She *compared* the themes of the hot songs, *looked through* the word distribution of them to know the topic listeners care about. She *filtered* the keys beats and rhythms of songs to adapt Tia’s narrow sound range.   
 And she checked out the [tracks page](https://study-bird-dash-app.herokuapp.com/tracks), she *observed* the vibe, melody and rhythm characters to find the production orientation for Tia’s album.
 
-Yuhong obsorbed all the information she got from `StudyBird551` and were much more confident to start her hard work.
+Yuhong absorbed all the information she got from `StudyBird551` and were much more confident to start her hard work.
 
