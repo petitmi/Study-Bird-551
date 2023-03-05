@@ -1,5 +1,5 @@
 # StudyBird551
-**Website on Heroku:** https://study-bird-dash-app.herokuapp.com 
+**Website on Heroku:** https://study-bird-dash-app.herokuapp.com  
 **StudyBird551** is a analysis visualization dashboard for billboard top100 hottest songs over year.
 
 ## Description
