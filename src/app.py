@@ -103,24 +103,104 @@ def generate_page_content(page_title, year):
     end_year=int(year[1])
     alt.renderers.set_embed_options(theme='dark')
     if page_title=="Artist Analysis":
-        df = pd.read_csv('../data/processed/second.csv')
+        df = pd.read_csv('../data/processed/artist_process_data.csv',encoding="ISO-8859-1")
         df = df.loc[(start_year <= df['Year']) & (df['Year'] <= end_year)]
-        df = df.drop_duplicates(subset=['Artist'])
-        pop=df[df['popularity']>85]
+        df1 = df.drop_duplicates(subset=['Artist'])
+        df1['year']=pd.DatetimeIndex(df1['first_year']).year
+        df2=df1[df1['popularity']>60]
+        df3=df.drop_duplicates(subset=['year_range'])
+        def word_cloud(string,i):
+            from wordcloud import WordCloud
+            import os
+
+            wordcloud_pic = f"../data/processed/wordcloud_{i}.png"
+            wordcloud = WordCloud(
+                background_color='white',
+                collocations=False,                
+                colormap='Set3_r',                
+                max_words=1200,                 
+                max_font_size=100,                 
+                scale=1,                 
+                random_state=1,                
+                width=1200,
+                height=200).generate_from_frequencies(string)
+            wordcloud.to_file(f'{wordcloud_pic}')     
+            return wordcloud_pic
+
+        a = dict(zip(df1['Artist'], df1['count']))
+        b = dict(zip(df1['Artist'], df1['popularity']))
+
+        word_cloud(a,1)
+        word_cloud(b,2)
+
+        image_filename1 = '../data/processed/wordcloud_1.png'
+        encoded_image1 = base64.b64encode(open(image_filename1, 'rb').read())
         
-        chart=alt.Chart(pop).mark_bar().encode(
-            y=alt.Y('popularity:Q',scale=alt.Scale(zero=False)),
-            x=alt.X('Artist:N',sort='-y'))
-        chart1=alt.Chart(pop).mark_bar().encode(
-            x=alt.X('popularity:Q',scale=alt.Scale(zero=False)),
-            y=alt.Y('Artist:N',sort='-x'))
-        chart2=alt.Chart(pop).mark_bar().encode(
-            x=alt.X('popularity:Q',scale=alt.Scale(zero=False)),
-            y=alt.Y('Artist:N',sort='-x'))
+        image_filename2 = '../data/processed/wordcloud_2.png'
+        encoded_image2 = base64.b64encode(open(image_filename2, 'rb').read())
         
-        chart_describ=""
-        chart1_describ=""
-        chart2_describ=""
+        def word_count(str):
+            counts = dict()
+            words = str.split()
+            for word in words:
+                if word in counts:
+                    counts[word] += 1
+                else:
+                    counts[word] = 1
+            return counts
+
+        c=[]
+        for i in df1['genres']:
+            res=i.strip('][').split(', ')
+            for j in res:
+                res1=j.replace("'","").replace(" ","-")
+                c.append(res1)
+        d=' '.join(c)
+        my_dict=word_count(d)
+        df4=pd.DataFrame(list(my_dict.items()),columns=['genres','Artist number'])
+    
+        chart=alt.Chart(df2,title='Artist\'s Song Quality vs Popularity').mark_point(filled=True,size=100).encode(
+                                y=alt.Y('popularity:Q',scale=alt.Scale(zero=False),title='Artist popularity'),
+                                x=alt.X('count:Q',scale=alt.Scale(zero=False),title='Number of times on top'),
+                                size=alt.Size('size',legend=None),
+                                color=alt.Color('size',legend=None),
+                                tooltip=['Artist','genres']
+                                ).properties(width=1100,height=310).interactive()
+        
+        chart1=alt.Chart(df1,title='Debut year distribution').mark_bar().encode(
+                        y=alt.Y('count()',scale=alt.Scale(zero=False),title='Artist number'),
+                        x=alt.X('first_year',scale=alt.Scale(zero=False),title='Debut year'),
+                        ).properties(width=650,height=310)
+        
+        chart1=chart1|alt.Chart(df1,title='Debut year percentage').mark_arc().encode(    
+            theta=alt.Theta("range_count:Q"),    
+            color=alt.Color("year_range:N"),
+            tooltip=['year_range','range_count']
+            ).properties(width=350,height=310)
+        
+        chart2=alt.Chart(df4[df4['Artist number']>10],title='genres distribution').mark_bar().encode(
+            x=alt.X('Artist number',scale=alt.Scale(zero=False),title='Artist number'),
+            y=alt.Y('genres',title='genres',sort='-x'),
+            color='Artist number'
+            ).properties(width=900,height=320)
+        
+        chart_describ=[dcc.Markdown("""
+        - The **size** and **color** represents the combination of Artist's popularity and song's quality.
+        - The singer in the **upper right** corner has the strongest overall strength.
+        - We filtered out singers whose popularity was less than **60**.
+        """),html.Div([html.Img(src='data:image/png;base64,{}'.format(encoded_image1.decode()))]),dcc.Markdown("""
+        - Artists with the highest popularity.
+        """),html.Div([html.Img(src='data:image/png;base64,{}'.format(encoded_image2.decode()))]),dcc.Markdown("""
+        - Artists with the highest number of songs on the Top 100.
+        """)]
+        chart1_describ=dcc.Markdown("""
+        - The chart on the **left** represents the **distribution of singers by year of debut**.
+        - The chart on the **right** represents the **percentage of the year of debut of the top artists**.
+        - The **range** of debut years is every **10** years.
+        """)
+        chart2_describ=dcc.Markdown("""
+        - Represented **the type of singer** with the **highest** number of top. 
+        """)
         
     elif page_title=="Lyrics Analysis":
         
