@@ -212,22 +212,37 @@ def generate_page_content(page_title, year):
         df_bin = df.groupby(['rank_bin','Year']).mean().reset_index()
         sentiment_counts = df['Sentiment'].value_counts()
         source = pd.DataFrame({"category": ['Positive','Negative','Neutral'], "sentiment_counts": [sentiment_counts[0], sentiment_counts[1], sentiment_counts[2]]})
-        df['rank_bin10'] = pd.cut(df['Rank'],bins=10,labels=['1-10','11-20','21-30','31-40','41-50','51-60','61-70','71-80','81-90','91-100'])
-        df_bin10 = df.groupby(['rank_bin10','Year']).mean().reset_index()
-   
+        df_bin10 = pd.read_excel('./data/processed/keyword_dataset.xlsx')
+        df_bin10 = df_bin10.loc[(start_year <= df_bin10['Year']) & (df_bin10['Year'] <= end_year)]
+        dropdown_options = df_bin10['Frequency'].drop_duplicates().tolist()
+        select_box = alt.binding_select(options=list(df_bin10['Frequency'].unique()),
+                                        name='Select a keyword:',
+                                       labels = ['freedom', 'happy', 'love', 'ocean', 'robot'])
+        selection = alt.selection_single(name='keyword', fields=['Frequency'], bind=select_box,init={'Frequency': dropdown_options[2]})
+
         
         if start_year==end_year:
             chart = alt.Chart(df_bin10).mark_bar(interpolate='basis').encode(
-                x=alt.X('Year:N'),
-                y=alt.Y('Frequency_love:Q', stack=True,axis=alt.Axis(title='Frequency')),
-                color='rank_bin10:O').properties(
-                title={'text':"Frequency of 'love' in {}".format(year), "anchor": "middle"},width=780)
+                x='Year:N',
+                y=alt.Y('Value:Q',stack=True,axis=alt.Axis(title='Frequency')),
+                color='rank_bin10:O'
+            ).properties(
+                width=1000
+            ).add_selection(
+                selection
+            ).transform_filter(
+                selection)
         else:
             chart = alt.Chart(df_bin10).mark_area(interpolate='basis').encode(
-                x=alt.X('Year:N'),
-                y=alt.Y('Frequency_love:Q', stack=True,axis=alt.Axis(title='Frequency')),
-                color='rank_bin10:O').properties(
-                title={'text':"Frequency of 'love' in {}".format(year), "anchor": "middle"},width=780)
+                x='Year:N',
+                y=alt.Y('Value:Q',stack=True,axis=alt.Axis(title='Frequency')),
+                color='rank_bin10:O'
+            ).properties(
+                width=1000
+            ).add_selection(
+                selection
+            ).transform_filter(
+                selection)
             
         chart1 = alt.Chart(df_bin).mark_bar().encode(
             x='Year:N',
@@ -265,8 +280,9 @@ def generate_page_content(page_title, year):
         chart_describ=[dcc.Markdown("""
         - Divide the top 100 songs into 10 groups; 
         - The X-axis represents the year; 
-        - The Y-axis is the frequency of the keyword 'love'; 
-        - From the figure, we can see the frequency of 'love' and the trend of their frequency every year.
+        - The Y-axis is the frequency of the keyword you have selected in the dropdown menu; 
+        - There are five options for the keyword selection in the dropdown menue which are: **love, freedom, ocean, robot,** and **happy**;
+        - From the figure, we can see the frequency of the keyword and the trend of their frequency every year.
         """)]
     
         chart1_describ=dcc.Markdown("""
