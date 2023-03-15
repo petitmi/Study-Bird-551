@@ -1,7 +1,7 @@
 # StudyBird551 
 An analysis visualization dashboard for Billboard top100 hot🔥🔥songs🔥🔥analysis over year.
 
-**Website:** https://study-bird-dash-app.herokuapp.com  
+**Website:** https://study-bird-app-dash.herokuapp.com 
 
 Our dashboard provides the main features of hit songs with respect to tracks, lyrics and artist through years. For those songs, several characteristics are the main focus.
    - Artists: (1) Popularity; (2) seniority; (3) dedication/activity; (4) genres.
