@@ -212,20 +212,20 @@ def generate_page_content(page_title, year):
         df_bin = df.groupby(['rank_bin','Year']).mean().reset_index()
         sentiment_counts = df['Sentiment'].value_counts()
         source = pd.DataFrame({"category": ['Positive','Negative','Neutral'], "sentiment_counts": [sentiment_counts[0], sentiment_counts[1], sentiment_counts[2]]})
-        df_bin10 = pd.read_excel('./data/processed/keyword_dataset.xlsx')
+        df_bin10 = pd.read_excel('./data/processed/keywords_dataset.xlsx')
         df_bin10 = df_bin10.loc[(start_year <= df_bin10['Year']) & (df_bin10['Year'] <= end_year)]
         dropdown_options = df_bin10['Frequency'].drop_duplicates().tolist()
         select_box = alt.binding_select(options=list(df_bin10['Frequency'].unique()),
-                                        name='Select a keyword:',
-                                       labels = ['freedom', 'happy', 'love', 'ocean', 'robot'])
-        selection = alt.selection_single(name='keyword', fields=['Frequency'], bind=select_box,init={'Frequency': dropdown_options[2]})
+                                        name='Select a keyword:')
+        selection = alt.selection_single(name='keyword', fields=['Frequency'], bind=select_box,init={'Frequency': dropdown_options[15]})
 
         
         if start_year==end_year:
             chart = alt.Chart(df_bin10).mark_bar(interpolate='basis').encode(
                 x='Year:N',
                 y=alt.Y('Value:Q',stack=True,axis=alt.Axis(title='Frequency')),
-                color='rank_bin10:O'
+                color='rank_bin10:O',
+                tooltip=["Value"]
             ).properties(
                 width=1000
             ).add_selection(
@@ -236,7 +236,8 @@ def generate_page_content(page_title, year):
             chart = alt.Chart(df_bin10).mark_area(interpolate='basis').encode(
                 x='Year:N',
                 y=alt.Y('Value:Q',stack=True,axis=alt.Axis(title='Frequency')),
-                color='rank_bin10:O'
+                color='rank_bin10:O',
+                tooltip=["Value"]
             ).properties(
                 width=1000
             ).add_selection(
@@ -249,6 +250,7 @@ def generate_page_content(page_title, year):
             y=alt.Y('Word Count:Q', axis=alt.Axis(title='Lyrics Length')),
             column=alt.Column('rank_bin:O',title=None),
             color='Year:N',
+            tooltip=["Word Count"]
             ).properties(
             title={'text':"Lyrics Length and Rank by Year", "anchor": "middle"},width=180)
         
