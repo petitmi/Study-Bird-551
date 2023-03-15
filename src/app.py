@@ -283,7 +283,9 @@ def generate_page_content(page_title, year):
         - Divide the top 100 songs into 10 groups; 
         - The X-axis represents the year; 
         - The Y-axis is the frequency of the keyword you have selected in the dropdown menu; 
-        - There are five options for the keyword selection in the dropdown menue which are: **love, freedom, ocean, robot,** and **happy**;
+        - There are 33 options for the keyword selection in the dropdown menue which are: **like, yeah, happy, know, dance, baby, believe, 
+        love, go, one, want, see, home, never, say, back, need, time, new, give, girl, way, come, good, feel, 
+        night, ticket, tell, right, low, life, man,** and **ocean**;
         - From the figure, we can see the frequency of the keyword and the trend of their frequency every year.
         """)]
     
